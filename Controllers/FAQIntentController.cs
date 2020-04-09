@@ -215,7 +215,7 @@ namespace CoronaBot.Controllers
                 var intents = await client.Intents.GetAllAsync(appId, appVersion,0 , 1000);
                 intents.ToList().ForEach(x => Debug.WriteLine(x.Name));
                 var i = intents.Where(x => x.Name.ToLower().Equals(intent.Trim().ToLower())).ToList();
-                if (i == null )
+                if (i == null || i.Count == 0)
                     await client.Intents.AddAsync(intent, appId, appVersion);
 
                 List<Example> examples = new List<Example>();
@@ -241,7 +241,7 @@ namespace CoronaBot.Controllers
             {
                 var intents = await client.Intents.GetAllAsync(appId, appVersion, 0, 1000);
                 var i = intents.Where(x => x.Name.ToLower().Equals(IntentName.Trim().ToLower())).ToList();
-                if (i != null)
+                if (i != null && i.Count > 0)
                     await client.Intents.DeleteAsync(i.FirstOrDefault().Id, appId, appVersion);
                 var newId = await client.Intents.AddAsync(IntentName, appId, appVersion);
             }
@@ -255,7 +255,7 @@ namespace CoronaBot.Controllers
                 {
 
                     var intents = await client.Intents.GetAllAsync(appId, appVersion,0,1000);
-                    if (intents.Count(x => x.Name.ToLower().Equals(intent.Trim().ToLower())) == 0)
+                    if (intents.Count(x => x.Name.ToLower().Equals(intent.Trim().ToLower())) == 0 )
                         return true;
                     await client.Intents.DeleteAsync(intents.FirstOrDefault(x=>x.Name.ToUpper().Equals(intent.Trim().ToUpper())).Id,appId,appVersion);
                     return true;
