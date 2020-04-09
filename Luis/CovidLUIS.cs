@@ -4,15 +4,15 @@ namespace CovidBot.Luis
     public class CovidLUIS
     {
         public string query { get; set; }
-        public Intent[] intents { get; set; }
-        public Entity[]entities { get; set; }
+        public MyIntent[] intents { get; set; }
+        public MyEntity[]entities { get; set; }
     }
-    public class Intent
+    public class MyIntent
     {
         public string intent { get; set; }
         public float score { get; set; }
     }
-    public class Entity
+    public class  MyEntity
     {
         public string entity { get; set; }
         public string type { get; set; }

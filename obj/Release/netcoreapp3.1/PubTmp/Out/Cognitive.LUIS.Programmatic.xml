@@ -1,0 +1,899 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Cognitive.LUIS.Programmatic</name>
+    </assembly>
+    <members>
+        <member name="M:Cognitive.LUIS.Programmatic.Apps.AppService.GetAllAsync(System.Int32,System.Int32)">
+            <summary>
+            Lists all of the user applications
+            </summary>
+            <param name="skip">the number of entries to skip. Default value is 0</param>
+            <param name="take">the number of entries to return. Maximum page size is 500. Default is 100</param>
+            <returns>A List of LUIS apps</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Apps.AppService.GetByIdAsync(System.String)">
+            <summary>
+            Gets the application info
+            </summary>
+            <param name="id">app id</param>
+            <returns>LUIS app</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Apps.AppService.GetByNameAsync(System.String)">
+            <summary>
+            Gets the application info
+            </summary>
+            <param name="name">app name</param>
+            <returns>LUIS app</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Apps.AppService.AddAsync(System.String,System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Creates a new LUIS app and returns the id
+            </summary>
+            <param name="name">app name</param>
+            <param name="description">app description</param>
+            <param name="culture">app culture: 'en-us', 'es-es', 'pt-br' and others</param>
+            <param name="usageScenario"></param>
+            <param name="domain"></param>
+            <param name="initialVersionId"></param>
+            <returns>The ID of the created app</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Apps.AppService.RenameAsync(System.String,System.String,System.String)">
+            <summary>
+            Change the name and description of LUIS app
+            </summary>
+            <param name="id">app id</param>
+            <param name="name">new app name</param>
+            <param name="description">new app description</param>
+            <returns></returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Apps.AppService.DeleteAsync(System.String)">
+            <summary>
+            Deletes an application
+            </summary>
+            <param name="id">app id</param>
+            <returns></returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Apps.IAppService.GetAllAsync(System.Int32,System.Int32)">
+            <summary>
+            Lists all of the user applications
+            </summary>
+            <param name="skip">the number of entries to skip. Default value is 0</param>
+            <param name="take">the number of entries to return. Maximum page size is 500. Default is 100</param>
+            <returns>A List of LUIS apps</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Apps.IAppService.GetByIdAsync(System.String)">
+            <summary>
+            Gets the application info
+            </summary>
+            <param name="id">app id</param>
+            <returns>LUIS app</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Apps.IAppService.GetByNameAsync(System.String)">
+            <summary>
+            Gets the application info
+            </summary>
+            <param name="name">app name</param>
+            <returns>LUIS app</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Apps.IAppService.AddAsync(System.String,System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            Creates a new LUIS app and returns the id
+            </summary>
+            <param name="name">app name</param>
+            <param name="description">app description</param>
+            <param name="culture">app culture: 'en-us', 'es-es', 'pt-br' and others</param>
+            <param name="usageScenario"></param>
+            <param name="domain"></param>
+            <param name="initialVersionId"></param>
+            <returns>The ID of the created app</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Apps.IAppService.RenameAsync(System.String,System.String,System.String)">
+            <summary>
+            Change the name and description of LUIS app
+            </summary>
+            <param name="id">app id</param>
+            <param name="name">new app name</param>
+            <param name="description">new app description</param>
+            <returns></returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Apps.IAppService.DeleteAsync(System.String)">
+            <summary>
+            Deletes an application
+            </summary>
+            <param name="id">app id</param>
+            <returns></returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.EntityService.GetAllSimpleEntitiesAsync(System.String,System.String,System.Int32,System.Int32)">
+            <summary>
+            Gets information about the simple entity models
+            </summary>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <param name="skip">the number of entries to skip. Default value is 0</param>
+            <param name="take">the number of entries to return. Maximum page size is 500. Default is 100</param>
+            <returns>A List of simple entities</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.EntityService.GetAllCompositeEntitiesAsync(System.String,System.String,System.Int32,System.Int32)">
+            <summary>
+            Gets information about the composite entity models
+            </summary>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <param name="skip">the number of entries to skip. Default value is 0</param>
+            <param name="take">the number of entries to return. Maximum page size is 500. Default is 100</param>
+            <returns>A List of composite entities</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.EntityService.GetAllClosedListEntitiesAsync(System.String,System.String,System.Int32,System.Int32)">
+            <summary>
+            Gets information about the closed list entity models
+            </summary>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <param name="skip">the number of entries to skip. Default value is 0</param>
+            <param name="take">the number of entries to return. Maximum page size is 500. Default is 100</param>
+            <returns>A List of closed list entities</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.EntityService.GetAllRegexEntitiesAsync(System.String,System.String,System.Int32,System.Int32)">
+            <summary>
+            Gets information about the regex entity models
+            </summary>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <param name="skip">the number of entries to skip. Default value is 0</param>
+            <param name="take">the number of entries to return. Maximum page size is 500. Default is 100</param>
+            <returns>A List of regex entities</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.EntityService.GetAllPatternAnyEntitiesAsync(System.String,System.String,System.Int32,System.Int32)">
+            <summary>
+            Gets information about the PatternAny entity models
+            </summary>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <param name="skip">the number of entries to skip. Default value is 0</param>
+            <param name="take">the number of entries to return. Maximum page size is 500. Default is 100</param>
+            <returns>A List of PatternAny entities</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.EntityService.GetSimpleEntityByIdAsync(System.String,System.String,System.String)">
+            <summary>
+            Gets information about the entity model
+            </summary>
+            <param name="id">entity id</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>app entity</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.EntityService.GetCompositeEntityByIdAsync(System.String,System.String,System.String)">
+            <summary>
+            Gets information about the composite entity model
+            </summary>
+            <param name="id">entity id</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>composite entity</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.EntityService.GetClosedListEntityByIdAsync(System.String,System.String,System.String)">
+            <summary>
+            Gets information about the closed list entity model
+            </summary>
+            <param name="id">entity id</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>closed list entity</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.EntityService.GetRegexEntityByIdAsync(System.String,System.String,System.String)">
+            <summary>
+            Gets information about the regex entity model
+            </summary>
+            <param name="id">entity id</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>regex entity</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.EntityService.GetPatternAnyEntityByIdAsync(System.String,System.String,System.String)">
+            <summary>
+            Gets information about the PatternAny entity model
+            </summary>
+            <param name="id">entity id</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>PatternAny entity</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.EntityService.GetSimpleEntityByNameAsync(System.String,System.String,System.String)">
+            <summary>
+            Gets information about the simple entity model
+            </summary>
+            <param name="name">entity name</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>simple entity</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.EntityService.GetCompositeEntityByNameAsync(System.String,System.String,System.String)">
+            <summary>
+            Gets information about the composite entity model
+            </summary>
+            <param name="name">entity name</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>composite entity</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.EntityService.GetClosedListEntityByNameAsync(System.String,System.String,System.String)">
+            <summary>
+            Gets information about the closed list entity model
+            </summary>
+            <param name="name">entity name</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>closed list entity</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.EntityService.GetRegexEntityByNameAsync(System.String,System.String,System.String)">
+            <summary>
+            Gets information about the regex entity model
+            </summary>
+            <param name="name">entity name</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>regex entity</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.EntityService.GetPatternAnyEntityByNameAsync(System.String,System.String,System.String)">
+            <summary>
+            Gets information about the PatternAny entity model
+            </summary>
+            <param name="name">entity name</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>PatternAny entity</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.EntityService.AddSimpleEntityAsync(System.String,System.String,System.String)">
+            <summary>
+            Creates a new simple entity and returns the id
+            </summary>
+            <param name="name">entity name</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>The ID of the created entity</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.EntityService.AddCompositeEntityAsync(System.String,System.Collections.Generic.IEnumerable{System.String},System.String,System.String)">
+            <summary>
+            Creates a new composite entity and returns the id
+            </summary>
+            <param name="name">entity name</param>
+            <param name="children">list of child entity names</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>The ID of the created entity</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.EntityService.AddClosedListEntityAsync(System.String,System.Collections.Generic.IEnumerable{Cognitive.LUIS.Programmatic.Models.ClosedListItem},System.String,System.String)">
+            <summary>
+            Creates a new closed list entity and returns the id
+            </summary>
+            <param name="name">entity name</param>
+            <param name="subLists">list of inner values and synonyms</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>The ID of the created entity</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.EntityService.AddRegexEntityAsync(System.String,System.String,System.String,System.String)">
+            <summary>
+            Creates a new regex entity and returns the id
+            </summary>
+            <param name="name">entity name</param>
+            <param name="regexPattern">regex pattern</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>The ID of the created entity</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.EntityService.AddPatternAnyEntityAsync(System.String,System.Collections.Generic.IEnumerable{System.String},System.String,System.String)">
+            <summary>
+            Creates a new PatternAny entity and returns the id
+            </summary>
+            <param name="name">entity name</param>
+            <param name="explicityList">list of inner values</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>The ID of the created entity</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.EntityService.RenameAsync(System.String,System.String,System.String,System.String)">
+            <summary>
+            Change the name of app entity
+            </summary>
+            <param name="id">entity id</param>
+            <param name="name">new intent name</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns></returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.EntityService.DeleteSimpleEntityAsync(System.String,System.String,System.String)">
+            <summary>
+            Deletes an entity extractor from the application
+            </summary>
+            <param name="id">entity id</param>
+            <param name="appId">app Id</param>
+            <param name="appVersionId">app version</param>
+            <returns></returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.EntityService.DeleteCompositeEntityAsync(System.String,System.String,System.String)">
+            <summary>
+            Deletes a composite entity model from the application
+            </summary>
+            <param name="id">entity id</param>
+            <param name="appId">app Id</param>
+            <param name="appVersionId">app version</param>
+            <returns></returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.EntityService.DeleteClosedListEntityAsync(System.String,System.String,System.String)">
+            <summary>
+            Deletes a closed list entity model from the application
+            </summary>
+            <param name="id">entity id</param>
+            <param name="appId">app Id</param>
+            <param name="appVersionId">app version</param>
+            <returns></returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.EntityService.DeleteRegexEntityAsync(System.String,System.String,System.String)">
+            <summary>
+            Deletes a regex entity model from the application
+            </summary>
+            <param name="id">entity id</param>
+            <param name="appId">app Id</param>
+            <param name="appVersionId">app version</param>
+            <returns></returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.EntityService.DeletePatternAnyEntityAsync(System.String,System.String,System.String)">
+            <summary>
+            Deletes a composite entity model from the application
+            </summary>
+            <param name="id">entity id</param>
+            <param name="appId">app Id</param>
+            <param name="appVersionId">app version</param>
+            <returns></returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.IEntityService.GetAllSimpleEntitiesAsync(System.String,System.String,System.Int32,System.Int32)">
+            <summary>
+            Gets information about the simple entity models
+            </summary>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <param name="skip">the number of entries to skip. Default value is 0</param>
+            <param name="take">the number of entries to return. Maximum page size is 500. Default is 100</param>
+            <returns>A List of simple entities</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.IEntityService.GetAllCompositeEntitiesAsync(System.String,System.String,System.Int32,System.Int32)">
+            <summary>
+            Gets information about the composite entity models
+            </summary>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <param name="skip">the number of entries to skip. Default value is 0</param>
+            <param name="take">the number of entries to return. Maximum page size is 500. Default is 100</param>
+            <returns>A List of composite entities</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.IEntityService.GetAllClosedListEntitiesAsync(System.String,System.String,System.Int32,System.Int32)">
+            <summary>
+            Gets information about the closed list entity models
+            </summary>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <param name="skip">the number of entries to skip. Default value is 0</param>
+            <param name="take">the number of entries to return. Maximum page size is 500. Default is 100</param>
+            <returns>A List of closed list entities</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.IEntityService.GetAllRegexEntitiesAsync(System.String,System.String,System.Int32,System.Int32)">
+            <summary>
+            Gets information about the regex entity models
+            </summary>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <param name="skip">the number of entries to skip. Default value is 0</param>
+            <param name="take">the number of entries to return. Maximum page size is 500. Default is 100</param>
+            <returns>A List of regex entities</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.IEntityService.GetAllPatternAnyEntitiesAsync(System.String,System.String,System.Int32,System.Int32)">
+            <summary>
+            Gets information about the PatternAny entity models
+            </summary>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <param name="skip">the number of entries to skip. Default value is 0</param>
+            <param name="take">the number of entries to return. Maximum page size is 500. Default is 100</param>
+            <returns>A List of PatternAny entities</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.IEntityService.GetSimpleEntityByIdAsync(System.String,System.String,System.String)">
+            <summary>
+            Gets information about the simple entity model
+            </summary>
+            <param name="id">entity id</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>simple entity</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.IEntityService.GetCompositeEntityByIdAsync(System.String,System.String,System.String)">
+            <summary>
+            Gets information about the composite entity model
+            </summary>
+            <param name="id">entity id</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>composite entity</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.IEntityService.GetClosedListEntityByIdAsync(System.String,System.String,System.String)">
+            <summary>
+            Gets information about the closed list entity model
+            </summary>
+            <param name="id">entity id</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>closed list entity</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.IEntityService.GetRegexEntityByIdAsync(System.String,System.String,System.String)">
+            <summary>
+            Gets information about the regex entity model
+            </summary>
+            <param name="id">entity id</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>regex entity</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.IEntityService.GetPatternAnyEntityByIdAsync(System.String,System.String,System.String)">
+            <summary>
+            Gets information about the PatternAny entity model
+            </summary>
+            <param name="id">entity id</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>PatterAny entity</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.IEntityService.GetSimpleEntityByNameAsync(System.String,System.String,System.String)">
+            <summary>
+            Gets information about the simple entity model
+            </summary>
+            <param name="name">entity name</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>simple entity</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.IEntityService.GetCompositeEntityByNameAsync(System.String,System.String,System.String)">
+            <summary>
+            Gets information about the composite entity model
+            </summary>
+            <param name="name">entity name</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>composite entity</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.IEntityService.GetClosedListEntityByNameAsync(System.String,System.String,System.String)">
+            <summary>
+            Gets information about the closed list entity model
+            </summary>
+            <param name="name">entity name</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>closed list entity</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.IEntityService.GetRegexEntityByNameAsync(System.String,System.String,System.String)">
+            <summary>
+            Gets information about the regex entity model
+            </summary>
+            <param name="name">entity name</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>regex entity</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.IEntityService.GetPatternAnyEntityByNameAsync(System.String,System.String,System.String)">
+            <summary>
+            Gets information about the PatternAny entity model
+            </summary>
+            <param name="name">entity name</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>PatternAny entity</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.IEntityService.AddSimpleEntityAsync(System.String,System.String,System.String)">
+            <summary>
+            Creates a new simple entity and returns the id
+            </summary>
+            <param name="name">entity name</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>The ID of the created entity</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.IEntityService.AddCompositeEntityAsync(System.String,System.Collections.Generic.IEnumerable{System.String},System.String,System.String)">
+            <summary>
+            Creates a new composite entity and returns the id
+            </summary>
+            <param name="name">entity name</param>
+            <param name="children">list of child entity names</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>The ID of the created entity</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.IEntityService.AddClosedListEntityAsync(System.String,System.Collections.Generic.IEnumerable{Cognitive.LUIS.Programmatic.Models.ClosedListItem},System.String,System.String)">
+            <summary>
+            Creates a new closed list entity and returns the id
+            </summary>
+            <param name="name">entity name</param>
+            <param name="subLists">list of inner values and synonyms</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>The ID of the created entity</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.IEntityService.AddRegexEntityAsync(System.String,System.String,System.String,System.String)">
+            <summary>
+            Creates a new regex entity and returns the id
+            </summary>
+            <param name="name">entity name</param>
+            <param name="regexPattern">regex pattern</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>The ID of the created entity</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.IEntityService.AddPatternAnyEntityAsync(System.String,System.Collections.Generic.IEnumerable{System.String},System.String,System.String)">
+            <summary>
+            Creates a new PatternAny entity and returns the id
+            </summary>
+            <param name="name">entity name</param>
+            <param name="explicityList">list of inner values</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>The ID of the created entity</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.IEntityService.RenameAsync(System.String,System.String,System.String,System.String)">
+            <summary>
+            Change the name of app entity
+            </summary>
+            <param name="id">entity id</param>
+            <param name="name">new intent name</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns></returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.IEntityService.DeleteSimpleEntityAsync(System.String,System.String,System.String)">
+            <summary>
+            Deletes an entity extractor from the application
+            </summary>
+            <param name="id">entity id</param>
+            <param name="appId">app Id</param>
+            <param name="appVersionId">app version</param>
+            <returns></returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.IEntityService.DeleteCompositeEntityAsync(System.String,System.String,System.String)">
+            <summary>
+            Deletes a composite entity model from the application
+            </summary>
+            <param name="id">entity id</param>
+            <param name="appId">app Id</param>
+            <param name="appVersionId">app version</param>
+            <returns></returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.IEntityService.DeleteClosedListEntityAsync(System.String,System.String,System.String)">
+            <summary>
+            Deletes a closed list entity model from the application
+            </summary>
+            <param name="id">entity id</param>
+            <param name="appId">app Id</param>
+            <param name="appVersionId">app version</param>
+            <returns></returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.IEntityService.DeleteRegexEntityAsync(System.String,System.String,System.String)">
+            <summary>
+            Deletes a regex entity model from the application
+            </summary>
+            <param name="id">entity id</param>
+            <param name="appId">app Id</param>
+            <param name="appVersionId">app version</param>
+            <returns></returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Entities.IEntityService.DeletePatternAnyEntityAsync(System.String,System.String,System.String)">
+            <summary>
+            Deletes a PatternAny entity model from the application
+            </summary>
+            <param name="id">entity id</param>
+            <param name="appId">app Id</param>
+            <param name="appVersionId">app version</param>
+            <returns></returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Examples.ExampleService.GetAllAsync(System.String,System.String,System.Int32,System.Int32)">
+            <summary>
+            Gets examples to be reviewed.
+            </summary>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <param name="skip">the number of entries to skip. Default value is 0</param>
+            <param name="take">the number of entries to return. Maximum page size is 500. Default is 100</param>
+            <returns>A list of examples to be reviewed</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Examples.ExampleService.AddAsync(System.String,System.String,Cognitive.LUIS.Programmatic.Models.Example)">
+            <summary>
+            Adds a labeled example to the application
+            </summary>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <param name="model">object containing the labeled example</param>
+            <returns>A object of utterance created</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Examples.ExampleService.AddBatchAsync(System.String,System.String,Cognitive.LUIS.Programmatic.Models.Example[])">
+            <summary>
+            Adds batch of labeled examples to the application
+            </summary>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <param name="models">array of objects containing the labeled examples</param>
+            <returns></returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Examples.ExampleService.DeleteAsync(System.String,System.String,System.String)">
+            <summary>
+            Deletes a example from the application.
+            </summary>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <param name="exampleId">labeled example id</param>
+            <returns></returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Examples.IExampleService.GetAllAsync(System.String,System.String,System.Int32,System.Int32)">
+            <summary>
+            Gets examples to be reviewed.
+            </summary>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <param name="skip">the number of entries to skip. Default value is 0</param>
+            <param name="take">the number of entries to return. Maximum page size is 500. Default is 100</param>
+            <returns>A list of examples to be reviewed</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Examples.IExampleService.AddAsync(System.String,System.String,Cognitive.LUIS.Programmatic.Models.Example)">
+            <summary>
+            Adds a labeled example to the application
+            </summary>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <param name="model">object containing the labeled example</param>
+            <returns>A object of utterance created</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Examples.IExampleService.AddBatchAsync(System.String,System.String,Cognitive.LUIS.Programmatic.Models.Example[])">
+            <summary>
+            Adds batch of labeled examples to the application
+            </summary>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <param name="models">array of objects containing the labeled examples</param>
+            <returns></returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Examples.IExampleService.DeleteAsync(System.String,System.String,System.String)">
+            <summary>
+            Deletes a example from the application.
+            </summary>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <param name="exampleId">labeled example id</param>
+            <returns></returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Intents.IntentService.GetAllAsync(System.String,System.String,System.Int32,System.Int32)">
+            <summary>
+            Gets information about the intent models
+            </summary>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <param name="skip">the number of entries to skip. Default value is 0</param>
+            <param name="take">the number of entries to return. Maximum page size is 500. Default is 100</param>
+            <returns>A List of app intents</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Intents.IntentService.GetByIdAsync(System.String,System.String,System.String)">
+            <summary>
+            Gets information about the intent model
+            </summary>
+            <param name="id">intent id</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>app intent</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Intents.IntentService.GetByNameAsync(System.String,System.String,System.String)">
+            <summary>
+            Gets information about the intent model
+            </summary>
+            <param name="name">intent name</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>app intent</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Intents.IntentService.AddAsync(System.String,System.String,System.String)">
+            <summary>
+            Creates a new app intent and returns the id
+            </summary>
+            <param name="name">intent name</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>The ID of the created intent</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Intents.IntentService.RenameAsync(System.String,System.String,System.String,System.String)">
+            <summary>
+            Change the name of app intent
+            </summary>
+            <param name="id">intent id</param>
+            <param name="name">new intent name</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns></returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Intents.IntentService.DeleteAsync(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Deletes an intent classifier from the application. All the utterances will be moved under None intent if deleteUtterance is false(default behavior).
+            To delete all the utterances of the intent pass the deleteUtterance parameter value as true.
+            </summary>
+            <param name="id">intent id</param>
+            <param name="appId">app Id</param>
+            <param name="appVersionId">app version</param>
+            <param name="deleteUtterances">delete utterances flag. Optional paramater with default value 'false'.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Intents.IIntentService.GetAllAsync(System.String,System.String,System.Int32,System.Int32)">
+            <summary>
+            Gets information about the intent models
+            </summary>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <param name="skip">the number of entries to skip. Default value is 0</param>
+            <param name="take">the number of entries to return. Maximum page size is 500. Default is 100</param>
+            <returns>A List of app intents</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Intents.IIntentService.GetByIdAsync(System.String,System.String,System.String)">
+            <summary>
+            Gets information about the intent model
+            </summary>
+            <param name="id">intent id</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>app intent</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Intents.IIntentService.GetByNameAsync(System.String,System.String,System.String)">
+            <summary>
+            Gets information about the intent model
+            </summary>
+            <param name="name">intent name</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>app intent</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Intents.IIntentService.AddAsync(System.String,System.String,System.String)">
+            <summary>
+            Creates a new app intent and returns the id
+            </summary>
+            <param name="name">intent name</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>The ID of the created intent</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Intents.IIntentService.RenameAsync(System.String,System.String,System.String,System.String)">
+            <summary>
+            Change the name of app intent
+            </summary>
+            <param name="id">intent id</param>
+            <param name="name">new intent name</param>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns></returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Intents.IIntentService.DeleteAsync(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Deletes an intent classifier from the application. All the utterances will be moved under None intent if deleteUtterance is false(default behavior).
+            To delete all the utterances of the intent pass the deleteUtterance parameter value as true.
+            </summary>
+            <param name="id">intent id</param>
+            <param name="appId">app Id</param>
+            <param name="appVersionId">app version</param>
+            <param name="deleteUtterances">delete utterances flag. Optional paramater with default value 'false'.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.IPublishService.PublishAsync(System.String,System.String,System.Boolean,System.Boolean)">
+            <summary>
+            Publishes a specific version of the application
+            </summary>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <param name="isStaging">The flag "isStaging" should be set to true in case you want to publish to the STAGING slot, otherwise the application version will be published to the PRODUCTION slot</param>
+            <param name="directVersionPublish">In case you do not want to publish to either the PRODUCTION or STAGING slots, you can set the flag "directVersionPublish" to true and query the endpoint [directly using the versionId] (https://westus.dev.cognitive.microsoft.com/docs/services/luis-endpoint-api-v3-0-preview/operations/5cb0a9459a1fe8fa44c28dd8).</param>
+            <returns>A object of publish details</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Training.ITrainingService.TrainAsync(System.String,System.String)">
+            <summary>
+            Sends a training request for a version of a specified LUIS app
+            </summary>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>A object of training request details</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Training.ITrainingService.GetStatusListAsync(System.String,System.String)">
+            <summary>
+            Gets the training status of all models (intents and entities) for the specified LUIS app
+            </summary>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>A list of trainings status</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Training.ITrainingService.TrainAndGetFinalStatusAsync(System.String,System.String,System.Int32)">
+            <summary>
+            Requests train and wait till the training completes, returns the final status.
+            </summary>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <param name="timeout">maximum wait time to return the final status (in seconds)</param>
+            <returns>Training details object</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Training.TrainingService.TrainAsync(System.String,System.String)">
+            <summary>
+            Sends a training request for a version of a specified LUIS app
+            </summary>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>A object of training request details</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Training.TrainingService.GetStatusListAsync(System.String,System.String)">
+            <summary>
+            Gets the training status of all models (intents and entities) for the specified LUIS app
+            </summary>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <returns>A list of trainings status</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Training.TrainingService.TrainAndGetFinalStatusAsync(System.String,System.String,System.Int32)">
+            <summary>
+            Requests train and wait till the training completes, returns the final status.
+            </summary>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <param name="timeout">maximum wait time to return the final status (in seconds)</param>
+            <returns>Training details object</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Versions.IVersionService.GetAllAsync(System.String,System.Int32,System.Int32)">
+            <summary>
+            Gets the application versions info
+            </summary>
+            <param name="appId">app id</param>
+            <param name="skip">the number of entries to skip. Default value is 0</param>
+            <param name="take">the number of entries to return. Maximum page size is 500. Default is 100</param>
+            <returns>A List of app versions</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Versions.IVersionService.GetByIdAsync(System.String,System.String)">
+            <summary>
+            Gets the task info
+            </summary>
+            <param name="appId">app id</param>
+            <param name="versionId">app version</param>
+            <returns>app version</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Versions.VersionService.GetAllAsync(System.String,System.Int32,System.Int32)">
+            <summary>
+            Gets the application versions info
+            </summary>
+            <param name="appId">app id</param>
+            <param name="skip">the number of entries to skip. Default value is 0</param>
+            <param name="take">the number of entries to return. Maximum page size is 500. Default is 100</param>
+            <returns>A List of app versions</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.Versions.VersionService.GetByIdAsync(System.String,System.String)">
+            <summary>
+            Gets the task info
+            </summary>
+            <param name="appId">app id</param>
+            <param name="versionId">app version</param>
+            <returns>app version</returns>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.LuisProgClient.#ctor(System.String,Cognitive.LUIS.Programmatic.Regions)">
+            <param name="subscriptionKey">LUIS Authoring Key</param>
+            <param name="region">Regions currently available in West US, West Europe and Australia East".</param>
+        </member>
+        <member name="P:Cognitive.LUIS.Programmatic.Models.AppVersion.TrainingStatus">
+            <summary>
+            "NeedsTraining", "InProgress", "Trained"
+            </summary>
+        </member>
+        <member name="M:Cognitive.LUIS.Programmatic.PublishService.PublishAsync(System.String,System.String,System.Boolean,System.Boolean)">
+            <summary>
+            Publishes a specific version of the application
+            </summary>
+            <param name="appId">app id</param>
+            <param name="appVersionId">app version</param>
+            <param name="isStaging">The flag "isStaging" should be set to true in case you want to publish to the STAGING slot, otherwise the application version will be published to the PRODUCTION slot</param>
+            <param name="directVersionPublish">In case you do not want to publish to either the PRODUCTION or STAGING slots, you can set the flag "directVersionPublish" to true and query the endpoint [directly using the versionId] (https://westus.dev.cognitive.microsoft.com/docs/services/luis-endpoint-api-v3-0-preview/operations/5cb0a9459a1fe8fa44c28dd8).</param>
+            <returns>A object of publish details</returns>
+        </member>
+    </members>
+</doc>

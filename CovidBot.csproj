@@ -5,6 +5,11 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
         
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'EchoBot' ">
+    <StartAction>Project</StartAction>
+    <ExternalConsole>true</ExternalConsole>
+    <ApplicationURL>https://localhost:3979;http://localhost:3978</ApplicationURL>
+  </PropertyGroup>
   <ItemGroup>
     <Content Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -23,6 +28,14 @@
     <PackageReference Include="Microsoft.Bot.Builder.AI.Luis" Version="4.8.0" />
     <PackageReference Include="Syncfusion.DocIO.Net.Core" Version="18.1.0.36-beta" />
     <PackageReference Include="Syncfusion.DocIORenderer.Net.Core" Version="18.1.0.36-beta" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.0" />
+    <PackageReference Include="Polly" Version="7.2.0" />
+    <PackageReference Include="Polly.Extensions.Http" Version="3.0.0" />
+    <PackageReference Include="Polly-Signed" Version="5.9.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.3" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.3" />
+    <PackageReference Include="MimeKit" Version="2.6.0" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="3.1.1" />
   </ItemGroup>
   
   <ItemGroup>
@@ -30,6 +43,7 @@
     <Folder Include="Luis\" />
     <Folder Include="Resources\" />
     <Folder Include="Helpers\" />
+    <Folder Include="ViewModels\" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="appDb.db-wal" />
@@ -41,5 +55,47 @@
     <None Update="Resources\autocertificazione.docx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Luis\App\Endpoint.cs" />
+    <Compile Remove="Luis\App\EndpointInfo.cs" />
+    <Compile Remove="Luis\Example\Example.cs" />
+    <Compile Remove="Luis\Example\BatchExample.cs" />
+    <Compile Remove="Luis\Example\ReviewExample.cs" />
+    <Compile Remove="Luis\Common\Error.cs" />
+    <Compile Remove="Luis\Common\ServiceException.cs" />
+    <Compile Remove="Luis\Entity\Entity.cs" />
+    <Compile Remove="Luis\Entity\Role.cs" />
+    <Compile Remove="Luis\Entity\ClosedListEntity.cs" />
+    <Compile Remove="Luis\Entity\ClosedListItem.cs" />
+    <Compile Remove="Luis\Entity\CompositeChild.cs" />
+    <Compile Remove="Luis\Entity\CompositeEntity.cs" />
+    <Compile Remove="Luis\Entity\EntityLabe.cs" />
+    <Compile Remove="Luis\Entity\EntityPrediction.cs" />
+    <Compile Remove="Luis\Entity\PatternAnyEntity.cs" />
+    <Compile Remove="Luis\Entity\PatternAnyItem.cs" />
+    <Compile Remove="Luis\Entity\RegexEntity.cs" />
+    <Compile Remove="Luis\Entity\ReviewEntityLabel.cs" />
+    <Compile Remove="Luis\Intent\Intent.cs" />
+    <Compile Remove="Luis\Intent\IntentPrediction.cs" />
+    <Compile Remove="Luis\Publish\Publish.cs" />
+    <Compile Remove="Luis\Train\Training.cs" />
+    <Compile Remove="Luis\Train\TrainingDetails.cs" />
+    <Compile Remove="Luis\Utterance\Utterance.cs" />
+    <Compile Remove="Luis\Version\AppVersion.cs" />
+    <Compile Remove="Luis\Version\AssignedEndpointKey.cs" />
+    <Compile Remove="Luis\App\LuisApp.cs" />
+    <Compile Remove="Luis\Entity\EntityLabel.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Polly">
+      <HintPath>..\..\Downloads\Cognitive-LUIS-Programmatic-dev\Cognitive.LUIS.Programmatic\bin\Release\netstandard2.0\publish\Polly.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\Downloads\Cognitive-LUIS-Programmatic-dev\Cognitive.LUIS.Programmatic\bin\Release\netstandard2.0\publish\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Cognitive.LUIS.Programmatic">
+      <HintPath>..\..\Downloads\Cognitive-LUIS-Programmatic-dev\Cognitive.LUIS.Programmatic\bin\Release\netstandard2.0\publish\Cognitive.LUIS.Programmatic.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

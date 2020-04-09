@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿    // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
@@ -18,6 +18,8 @@ using Syncfusion.DocIO.DLS;
 using Syncfusion.DocIO;
 using Syncfusion.DocIORenderer;
 using Syncfusion.Pdf;
+using MimeKit;
+using System.Globalization;
 
 namespace Microsoft.BotBuilderSamples.Bots
 {
@@ -31,11 +33,22 @@ namespace Microsoft.BotBuilderSamples.Bots
             luisRecognizer = _luisRecognizer;
         }
 
+        private static Attachment GetAttachment(FAQAnswer fAQAnswer)
+        {
+            var fileData = Convert.ToBase64String(File.ReadAllBytes(fAQAnswer.Filepath));
+            var contentType = MimeTypes.GetMimeType(fAQAnswer.Filepath);
+            return new Attachment
+            {
+                Name = string.IsNullOrWhiteSpace(fAQAnswer.Filename) ? "  " : fAQAnswer.Filename,
+                ContentType = contentType,
+                ContentUrl = $"data:{contentType};base64,{fileData}",
+            };
+        }
+
         private static Attachment GetInlineAttachment()
         {
             var imagePath = Path.Combine(Environment.CurrentDirectory, @"Resources/de-luca-nervoso.jpg");
             var imageData = Convert.ToBase64String(File.ReadAllBytes(imagePath));
-
             return new Attachment
             {
                 Name = @"Resources/de-luca-nervoso.jpg",
@@ -95,13 +108,13 @@ namespace Microsoft.BotBuilderSamples.Bots
 
             PdfDocument pdfDocument = converter.ConvertToPDF(doc);
 
-            FileStream pdfStream = File.Create("output.pdf");
+            FileStream pdfStream = File.Create("autocertificazione.pdf");
             pdfDocument.Save(pdfStream);
 
             var pdfData = Convert.ToBase64String(ReadToEnd(pdfStream));
             return new Attachment
             {
-                Name = "autocertificazione.pdf",
+                Name = "Autocertificazione",
                 ContentType = "application/pdf",
                 ContentUrl = $"data:application/pdf;base64,{pdfData}",
             };
@@ -111,13 +124,19 @@ namespace Microsoft.BotBuilderSamples.Bots
         {
             try
             {
-
-                var replyText = "";
-                
+                await turnContext.SendActivityAsync(new Activity { Type = "typing" });
+               
                 var user = appDbContext.Users.Include(x => x.SelfCertifications).Where(x => x.Id == turnContext.Activity.From.Id).FirstOrDefault();
+                if (user == null)
+                {
+                    user = new User();
+                    user.Id = turnContext.Activity.From.Id;
+                    await appDbContext.Users.AddAsync(user);
 
-                if (user != null
-                    && user.SelfCertifications != null
+                    await appDbContext.SaveChangesAsync();
+                }
+                
+                if (user.SelfCertifications != null
                     && user.SelfCertifications.Count > 0
                     && user.SelfCertifications.Last().IsOpen)
                 {
@@ -126,7 +145,7 @@ namespace Microsoft.BotBuilderSamples.Bots
                     if (turnContext.Activity.Text.Trim().ToLower().Equals("vai indietro")
                         || turnContext.Activity.Text.Trim().ToLower().Equals("indietro"))
                     {
-                        selfCertification.Step = Math.Max(0, --selfCertification.Step);
+                        selfCertification.Step = Math.Max(0, selfCertification.Step - 2);
                         appDbContext.Update(selfCertification);
                         await appDbContext.SaveChangesAsync();
                         await turnContext.SendActivityAsync(MessageFactory.Text(SelfCertificationManager.Steps[selfCertification.Step]));
@@ -134,18 +153,19 @@ namespace Microsoft.BotBuilderSamples.Bots
                     else if (turnContext.Activity.Text.Trim().ToLower().Equals("scarica")
                         || turnContext.Activity.Text.Trim().ToLower().Equals("scarica"))
                     {
+                        selfCertification.Step--;
+                        selfCertification = SelfCertificationManager.SetData("", user.SelfCertifications.Last());
                         selfCertification.IsOpen = false;
                         appDbContext.Update(selfCertification);
                         await appDbContext.SaveChangesAsync();
                         await turnContext.SendActivityAsync(MessageFactory.Attachment(GetCustomDoc(selfCertification), "Puoi scaricare la tua autocertificazione cliccando qui:"), cancellationToken);
                     }
                     else if (turnContext.Activity.Text.Trim().ToLower().Equals("annulla")
-                        || turnContext.Activity.Text.Trim().ToLower().Equals("stop")) 
+                        || turnContext.Activity.Text.Trim().ToLower().Equals("stop"))
                     {
 
                         selfCertification.IsOpen = false;
-                        appDbContext.Update(selfCertification);
-                        appDbContext.Remove(user);
+                        appDbContext.Remove(selfCertification);
 
                         await appDbContext.SaveChangesAsync();
                         await turnContext.SendActivityAsync(MessageFactory.Text("Compilazione annullata"));
@@ -163,11 +183,10 @@ namespace Microsoft.BotBuilderSamples.Bots
                         else
                         {
                             selfCertification.IsOpen = false;
-                            appDbContext.Remove(user);
-                            appDbContext.Update(selfCertification);
                             await appDbContext.SaveChangesAsync();
                             await turnContext.SendActivityAsync(MessageFactory.Attachment(GetCustomDoc(selfCertification), "Puoi scaricare la tua autocertificazione cliccando qui:"), cancellationToken);
 
+                            appDbContext.Remove(selfCertification);
                         }
                     }
 
@@ -175,129 +194,274 @@ namespace Microsoft.BotBuilderSamples.Bots
                 }
                 else
                 {
-                    var luisResult = await luisRecognizer.RecognizeAsync(turnContext, new CancellationToken());
-
-                    switch (luisResult.GetTopScoringIntent().intent)
+                    if (turnContext.Activity.Text.Equals("/start"))
                     {
-                        case IntentLUIS.SCARICARE:
-                            await turnContext.SendActivityAsync(MessageFactory.Attachment(GetCustomDoc(new SelfCertification())), cancellationToken);
-                            break;
-                        case IntentLUIS.COMPILARE:
-                            {
+                        var id = turnContext.Activity.From.Id;
+                        if (user == null && appDbContext.Users.Count(x => x.Id == id) == 0)
+                        {
+                            var _user = new User();
+                            _user.Id = id;
+                            appDbContext.Add(_user);
+                            await appDbContext.SaveChangesAsync();
+                        }
+                        await turnContext.SendActivityAsync(MessageFactory.Text("Ciao, qui puoi trovare informazioni utili riguardanti il COVID-19, compilare un nuovo modulo di autocertificazione o scaricarne uno vuoto"), cancellationToken);
 
-                                var selfCertification = new SelfCertification();
-                                selfCertification.Step = 1;
-                                selfCertification.IsOpen = true;
-                                if (user.SelfCertifications == null)
-                                    user.SelfCertifications = new List<SelfCertification>();
-                                user.SelfCertifications.Add(selfCertification);
-
-                                appDbContext.Add(selfCertification);
-                                appDbContext.SaveChanges();
-                                await turnContext.SendActivityAsync(MessageFactory.Text(SelfCertificationManager.Steps[1]), cancellationToken);
-                                break;
-                            }
-                        case IntentLUIS.LAUREA:
-                            {
-                                await turnContext.SendActivityAsync(MessageFactory.Text("Ti mando i carabinieri"), cancellationToken);
-                                await turnContext.SendActivityAsync(MessageFactory.Text("Ma te li mando con i lanciafiamme"), cancellationToken);
-                                break;
-                            }
-                        case IntentLUIS.USCIRE:
-                            {
-                                await turnContext.SendActivityAsync(MessageFactory.Attachment(GetInlineAttachment()));
-                                break; ;
-                            }
-                        case IntentLUIS.GIORNALI:
-                            {
-                                foreach (var pharse in CovidFAQ.giornali)
-                                {
-                                    await turnContext.SendActivityAsync(MessageFactory.Text(pharse), cancellationToken);
-
-                                }
-                                break;
-                            }
-                        case IntentLUIS.CORONAVIRUS:
-                            {
-                                foreach (var pharse in CovidFAQ.coronavirus)
-                                {
-                                    await turnContext.SendActivityAsync(MessageFactory.Text(pharse), cancellationToken);
-
-                                }
-                                break;
-                            }
-
-                        case IntentLUIS.LAVORO:
-                            {
-                                foreach (var pharse in CovidFAQ.lavoro)
-                                {
-                                    await turnContext.SendActivityAsync(MessageFactory.Text(pharse), cancellationToken);
-
-                                }
-                                break;
-                            }
-
-                        case IntentLUIS.UFFICIPUBBLICI:
-                            {
-                                foreach (var pharse in CovidFAQ.ufficipubblici)
-                                {
-                                    await turnContext.SendActivityAsync(MessageFactory.Text(pharse), cancellationToken);
-
-                                }
-                                break;
-                            }
-
-                        case IntentLUIS.SECONDACASA:
-                            {
-                                foreach (var pharse in CovidFAQ.secondacasa)
-                                {
-                                    await turnContext.SendActivityAsync(MessageFactory.Text(pharse), cancellationToken);
-
-                                }
-                                break;
-                            }
-
-                        case IntentLUIS.SPESA:
-                            {
-                                foreach (var pharse in CovidFAQ.spesa)
-                                {
-                                    await turnContext.SendActivityAsync(MessageFactory.Text(pharse), cancellationToken);
-
-                                }
-                                break;
-                            }
-                        case IntentLUIS.NEGOZI:
-                        case IntentLUIS.COMMERCIALI:
-                            {
-                                foreach (var pharse in CovidFAQ.commerciali)
-                                {
-                                    await turnContext.SendActivityAsync(MessageFactory.Text(pharse), cancellationToken);
-
-                                }
-                                break;
-                            }
-                        case IntentLUIS.SCUOLA:
-                            {
-                                foreach (var pharse in CovidFAQ.scuola)
-                                {
-                                    await turnContext.SendActivityAsync(MessageFactory.Text(pharse), cancellationToken);
-
-                                }
-                                break;
-                            }
-                        default:
-                            {
-                                await turnContext.SendActivityAsync(MessageFactory.Text("Purtroppo non ho capito"), cancellationToken);
-                                await turnContext.SendActivityAsync(MessageFactory.Text("Puoi avere altre informazioni riguardanti il coronavirus consultando le FAQ presenti nei siti istituzionali"), cancellationToken);
-                                await turnContext.SendActivityAsync(MessageFactory.Text("http://www.governo.it/it/faq-iorestoacasa"), cancellationToken);
-                                await turnContext.SendActivityAsync(MessageFactory.Text("http://www.salute.gov.it/portale/nuovocoronavirus/dettaglioFaqNuovoCoronavirus.jsp?lingua=italiano&id=228"), cancellationToken);
-                                await turnContext.SendActivityAsync(MessageFactory.Text("http://www.anci.it/faq-emergenza-coronavirus/"), cancellationToken);
-                                await turnContext.SendActivityAsync(MessageFactory.Text("http://opendatadpc.maps.arcgis.com/apps/opsdashboard/index.html#/dae18c330e8e4093bb090ab0aa2b4892"), cancellationToken); 
-                            }
-                            break;
                     }
-                }
+                    else
+                    {
 
+
+                        var luisResult = await luisRecognizer.RecognizeAsync(turnContext, new CancellationToken());
+                        var score = luisResult.GetTopScoringIntent().score;
+
+                        if (score < .15)
+                        {
+                            await IDK(turnContext, cancellationToken);
+                        }
+                        else 
+                            switch (luisResult.GetTopScoringIntent().intent)
+                            {
+                                case IntentLUIS.SCARICARE:
+                                    await turnContext.SendActivityAsync(MessageFactory.Attachment(GetCustomDoc(new SelfCertification())), cancellationToken);
+                                    break;
+                                case IntentLUIS.COMPILARE:
+                                    {
+
+                                        var selfCertification = new SelfCertification();
+                                        selfCertification.Step = 1;
+                                        selfCertification.IsOpen = true;
+                                        if (user.SelfCertifications == null)
+                                            user.SelfCertifications = new List<SelfCertification>();
+                                        user.SelfCertifications.Add(selfCertification);
+
+                                        appDbContext.Add(selfCertification);
+                                        appDbContext.SaveChanges();
+                                        await turnContext.SendActivityAsync(MessageFactory.Text(SelfCertificationManager.Steps[1]), cancellationToken);
+                                        break;
+                                    }
+                                case IntentLUIS.LAUREA:
+                                    {
+                                        await turnContext.SendActivityAsync(MessageFactory.Text("Ti mando i carabinieri"), cancellationToken);
+                                        await turnContext.SendActivityAsync(MessageFactory.Text("Ma te li mando con i lanciafiamme"), cancellationToken);
+                                        break;
+                                    }
+                                case IntentLUIS.USCIRE:
+                                    {
+
+                                        if (luisResult.GetTopScoringIntent().score > .5)
+                                        {
+                                            var attchment = new Attachment
+                                            {
+                                                Name = @"No.",
+                                                ContentType = "image/png",
+                                                ContentUrl = $"{CovidBot.Helpers.CovidImage.deluca}",
+                                            };
+                                            await turnContext.SendActivityAsync(MessageFactory.Attachment(attchment));
+                                        }
+                                        break;
+                                    }
+                                case IntentLUIS.GIORNALI:
+                                    {
+                                        foreach (var pharse in CovidFAQ.giornali)
+                                        {
+                                            await turnContext.SendActivityAsync(MessageFactory.Text(pharse), cancellationToken);
+
+                                        }
+                                        break;
+                                    }
+                                case IntentLUIS.CORONAVIRUS:
+                                    {
+                                        foreach (var pharse in CovidFAQ.coronavirus)
+                                        {
+                                            await turnContext.SendActivityAsync(MessageFactory.Text(pharse), cancellationToken);
+
+                                        }
+                                        break;
+                                    }
+
+                                case IntentLUIS.LAVORO:
+                                    {
+                                        foreach (var pharse in CovidFAQ.lavoro)
+                                        {
+                                            await turnContext.SendActivityAsync(MessageFactory.Text(pharse), cancellationToken);
+
+                                        }
+                                        break;
+                                    }
+
+                                case IntentLUIS.UFFICIPUBBLICI:
+                                    {
+                                        foreach (var pharse in CovidFAQ.ufficipubblici)
+                                        {
+                                            await turnContext.SendActivityAsync(MessageFactory.Text(pharse), cancellationToken);
+
+                                        }
+                                        break;
+                                    }
+
+                                case IntentLUIS.SECONDACASA:
+                                    {
+                                        foreach (var pharse in CovidFAQ.secondacasa)
+                                        {
+                                            await turnContext.SendActivityAsync(MessageFactory.Text(pharse), cancellationToken);
+
+                                        }
+                                        break;
+                                    }
+
+                                case IntentLUIS.SPESA:
+                                    {
+                                        foreach (var pharse in CovidFAQ.spesa)
+                                        {
+                                            await turnContext.SendActivityAsync(MessageFactory.Text(pharse), cancellationToken);
+
+                                        }
+                                        break;
+                                    }
+                                case IntentLUIS.NEGOZI:
+                                case IntentLUIS.COMMERCIALI:
+                                    {
+                                        foreach (var pharse in CovidFAQ.commerciali)
+                                        {
+                                            await turnContext.SendActivityAsync(MessageFactory.Text(pharse), cancellationToken);
+
+                                        }
+                                        break;
+                                    }
+                                case IntentLUIS.SCUOLA:
+                                    {
+                                        foreach (var pharse in CovidFAQ.scuola)
+                                        {
+                                            await turnContext.SendActivityAsync(MessageFactory.Text(pharse), cancellationToken);
+
+                                        }
+                                        break;
+                                    }
+                                case IntentLUIS.SALUTO:
+                                    {
+                                        var id = turnContext.Activity.From.Id;
+                                        if (user == null && appDbContext.Users.Count(x => x.Id == id) == 0)
+                                        {
+                                            var _user = new User();
+                                            _user.Id = id;
+                                            appDbContext.Add(_user);
+                                            await appDbContext.SaveChangesAsync();
+                                        }
+                                        await turnContext.SendActivityAsync(MessageFactory.Text("Ciao, qui puoi trovare informazioni utili riguardanti il COVID-19, compilare un nuovo modulo di autocertificazione o scaricarne uno vuoto"), cancellationToken);
+                                        break;
+                                    }
+                                case IntentLUIS.COSACHIEDO:
+                                    {
+                                        var intent = appDbContext.FAQIntents.Include(x => x.FAQAnswers).Where(x => x.Intent == luisResult.GetTopScoringIntent().intent).FirstOrDefault();
+                                        var intents = appDbContext.FAQIntents.Include(x => x.FAQQuestions).ToList();
+
+                                        var answers = intent.FAQAnswers.Where(x => !string.IsNullOrWhiteSpace(x.Answer)).ToList();
+                                        await turnContext.SendActivityAsync(MessageFactory.Text(string.Join(" \n\n", answers.Select(f => f.Answer))), cancellationToken);
+                                        var rnd = new Random();
+                                        var q = string.Empty;
+                                        foreach (var i in Enumerable.Range(0,4))
+                                        {
+                                            var r = rnd.Next(intents.Count - 1);
+                                            var randomIntent = intents[r];
+                                            var rq = rnd.Next(randomIntent.FAQQuestions.Count-1);
+                                            var question = randomIntent.FAQQuestions[rq].Question;
+                                            q += question + " \n\n";
+                                        }
+                                        await turnContext.SendActivityAsync(MessageFactory.Text(q), cancellationToken);
+
+                                        break;
+                                    }
+                                case IntentLUIS.REPORTCONTAGI:
+                                    {
+                                         string culture = "it-IT"; 
+                                        Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(culture);
+                                        Thread.CurrentThread.CurrentUICulture = CultureInfo.CreateSpecificCulture(culture);
+
+                                        var date = DateTime.Now;
+
+                                        if (luisResult.Entities.ContainsKey("datetime"))
+                                        {
+                                            var dstr = luisResult.Entities["datetime"][0].ToString();
+                                            var d = Newtonsoft.Json.JsonConvert.DeserializeObject<TempEntity>(dstr);
+                                            DateTime.TryParse(d.timex.FirstOrDefault().Replace("XXXX","2020"), out date);
+                                        }
+                                        var startDate = new DateTime(2020, 03, 02);
+                                        if (date.Date > DateTime.Now)
+                                            date = DateTime.Now;
+                                        if (date.Date < startDate.Date)
+                                            date = startDate.Date;
+                                        Attachment attachment;
+                                        string division = "";
+                                        if (turnContext.Activity.Text.ToLower().Contains("provincia")
+                                            || turnContext.Activity.Text.ToLower().Contains("province")
+                                            || turnContext.Activity.Text.ToLower().Contains("provincie"))
+                                        {
+                                            attachment = new Attachment()
+                                            {
+                                                ContentUrl = $"https://github.com/pcm-dpc/COVID-19/raw/master/schede-riepilogative/province/dpc-covid19-ita-scheda-province-{date.ToString("yyyyMMdd")}.pdf",
+                                                ContentType = "application/pdf",
+                                                Name = "Report"
+                                            };
+                                            division = " suddiviso per province";
+                                        }
+                                        else
+                                        {
+                                            attachment = new Attachment()
+                                            {
+                                                ContentUrl = $"https://github.com/pcm-dpc/COVID-19/raw/master/schede-riepilogative/regioni/dpc-covid19-ita-scheda-regioni-{date.ToString("yyyyMMdd")}.pdf",
+                                                ContentType = "application/pdf",
+                                                Name = "Report"
+                                            };
+                                        }
+                                        
+                                        var temporal = $"di {date.ToString("dddd dd MMMM yyyy")}";
+                                        if (date.Date == DateTime.Now.Date)
+                                            temporal = "di oggi";
+                                        else if (date.Date == DateTime.Now.AddDays(-1).Date)
+                                            temporal = "di ieri";
+
+
+                                        await turnContext.SendActivityAsync(MessageFactory.Text($"Ecco il report{division} {temporal}"), cancellationToken);
+                                        await turnContext.SendActivityAsync(MessageFactory.Attachment(attachment), cancellationToken);
+
+                                        break;
+                                    }
+                                case IntentLUIS.NONE:
+                                    {
+                                        await IDK(turnContext, cancellationToken);
+                                        break;
+                                    }
+                                default:
+                                    {
+                                        var intent = appDbContext.FAQIntents.Include(x=>x.FAQAnswers).Include(x => x.FAQQuestions).Where(x => x.Intent == luisResult.GetTopScoringIntent().intent).FirstOrDefault();
+                                        if (intent == null)
+                                        {
+                                            await IDK(turnContext, cancellationToken);
+                                            break;
+                                        }
+                                        var answers = intent.FAQAnswers.Where(x => !string.IsNullOrWhiteSpace(x.Answer)).ToList();
+                                        if (answers.Count>0)
+                                            await turnContext.SendActivityAsync(MessageFactory.Text(string.Join(" \n\n",answers.Select(f=>f.Answer))), cancellationToken);
+                                        var attachment = intent.FAQAnswers.Where(x => !string.IsNullOrWhiteSpace(x.Filepath)).ToList();
+                                        if (attachment.Count > 0)
+                                            await turnContext.SendActivityAsync(MessageFactory.Attachment(GetAttachment(attachment.First())), cancellationToken);
+                                        break;
+                                    }
+                            }
+                        var userQuestion = new UserQuestion
+                        {
+                            Intent = luisResult.GetTopScoringIntent().intent,
+                            Score = luisResult.GetTopScoringIntent().score,
+                            Question = turnContext.Activity.Text,
+                            UserId = turnContext.Activity.From.Id,
+                            CreatedAt = DateTime.Now,
+                            UpdatedAt = DateTime.Now
+                        };
+                        await appDbContext.AddAsync(userQuestion);
+                        await appDbContext.SaveChangesAsync();
+                    }
+
+                }
 
             }
             catch (Exception ex)
@@ -305,6 +469,67 @@ namespace Microsoft.BotBuilderSamples.Bots
                   string x = ex.Message;
             }
             // await turnContext.SendActivityAsync(MessageFactory.Attachment(new Attachment("application/pdf", "https://static.fanpage.it/wp-content/uploads/2020/03/nuovo-modello-autocertificazione.pdf", name: "Autocertificazione.pdf"), "Puoi scaricare la tua autocertificazione cliccando qui:"), cancellationToken);
+
+        }
+        Attachment IDKLinks(string link)
+        {
+            return new Attachment
+            {
+                ContentUrl = link,
+                Name = "Sito"
+            };
+        }
+
+        public async Task IDK(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
+        {
+           // await turnContext.SendActivityAsync(MessageFactory.Text("\n\n"), cancellationToken);
+           // await turnContext.SendActivityAsync(MessageFactory.Text("http://www.governo.it/it/faq-iorestoacasa , \n\nhttp://www.salute.gov.it/portale/nuovocoronavirus/dettaglioFaqNuovoCoronavirus.jsp?lingua=italiano&id=228, \n\n"), cancellationToken);
+            //await turnContext.SendActivityAsync(MessageFactory.Carousel(new List<Attachment> { IDKLinks("http://www.governo.it/it/faq-iorestoacasa"), IDKLinks("http://www.salute.gov.it/portale/nuovocoronavirus/dettaglioFaqNuovoCoronavirus.jsp?lingua=italiano&id=228"), IDKLinks("nhttp://opendatadpc.maps.arcgis.com/apps/opsdashboard/index.html#/dae18c330e8e4093bb090ab0aa2b4892") }));
+
+            var h = new HeroCard
+            {
+                Buttons = new List<CardAction>()
+                {
+                    new CardAction(ActionTypes.OpenUrl, "Decreto #IoRestoaCasa", value: "http://www.governo.it/it/faq-iorestoacasa"),
+                    new CardAction(ActionTypes.OpenUrl, "Ministero della Salute", value:"http://www.salute.gov.it/portale/nuovocoronavirus/dettaglioFaqNuovoCoronavirus.jsp?lingua=italiano&id=228"),
+                    new CardAction(ActionTypes.OpenUrl, "Dashboard Covid", value:"http://opendatadpc.maps.arcgis.com/apps/opsdashboard/index.html#/dae18c330e8e4093bb090ab0aa2b4892")
+                },
+                Title = "Purtroppo non ho capito",
+                Text = "Puoi avere altre informazioni riguardanti il coronavirus consultando le FAQ presenti nei siti istituzionali"
+            };
+            await turnContext.SendActivityAsync(MessageFactory.Attachment(h.ToAttachment()),cancellationToken);
+            var count = appDbContext.FAQIntents.Count()-1;
+            var r = new Random();
+            var intent = appDbContext.FAQIntents.Include(x => x.FAQQuestions).Skip(r.Next(count)).Take(1);
+            await turnContext.SendActivityAsync(MessageFactory.Text($"Oppure puoi provare a chiedermi:\n\n{intent.First().FAQQuestions[0].Question}"), cancellationToken);
+
+        }
+        protected override async Task OnEventActivityAsync(ITurnContext<IEventActivity> turnContext, CancellationToken cancellationToken)
+        {
+
+            await turnContext.SendActivityAsync(new Activity { Type = "typing" });
+            if (turnContext.Activity.Name == "selfCertification")
+            {
+                await turnContext.SendActivityAsync(MessageFactory.Text("Ciao, vuoi compilare un modulo di autocertificazione, o scaricarne uno vuoto?"), cancellationToken);
+
+            }
+            else if (turnContext.Activity.Name == "askToDeLuca")
+            {
+                await turnContext.SendActivityAsync(MessageFactory.Text("Ciao, cosa vuoi sapere riguardo il coronavirus?"), cancellationToken);
+            }
+        }
+        protected override async Task OnConversationUpdateActivityAsync(ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+        {
+            var id = turnContext.Activity.From.Id;
+            if (appDbContext.Users.Count(x => x.Id == id) == 0)
+            {
+                var user = new User();
+                user.Id = id;
+                appDbContext.Add(user);
+                await appDbContext.SaveChangesAsync();
+              //  await turnContext.SendActivityAsync(MessageFactory.Text("Ciao, qui puoi trovare informazioni utili riguardanti il COVID-19, compilare un nuovo modulo di autocertificazione o scaricarne uno vuoto"), cancellationToken);
+
+            }
 
         }
         public int Id { get; set; }
@@ -320,7 +545,7 @@ namespace Microsoft.BotBuilderSamples.Bots
                     user.Id = member.Id;
                     appDbContext.Add(user);
                     await appDbContext.SaveChangesAsync();
-                    await turnContext.SendActivityAsync(MessageFactory.Text("Ciao, qui puoi trovare informazioni utili riguardanti il COVID-19, compilare un nuovo modulo di autocertificazione o scaricarne uno vuoto"), cancellationToken);
+                //    await turnContext.SendActivityAsync(MessageFactory.Text("Ciao, qui puoi trovare informazioni utili riguardanti il COVID-19, compilare un nuovo modulo di autocertificazione o scaricarne uno vuoto"), cancellationToken);
                 }
             }
         }
@@ -376,4 +601,10 @@ namespace Microsoft.BotBuilderSamples.Bots
             }
         }
     }
+    public class TempEntity
+    {
+        public string[] timex { get; set; }
+        public string type { get; set; }
+    }
+
 }

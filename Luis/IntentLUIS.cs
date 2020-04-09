@@ -17,7 +17,9 @@ namespace CovidBot.Luis
         public const string SPESA = "spesa";
         public const string SPOSTAMENTI = "spostamenti";
         public const string UFFICIPUBBLICI = "ufficipubblici";
-       
-        
+        public const string SALUTO = "saluto";
+        public const string NONE = "NONE";
+        public const string COSACHIEDO = "COSACHIEDO";
+        public const string REPORTCONTAGI = "REPORTCONTAGI";
     }
 }

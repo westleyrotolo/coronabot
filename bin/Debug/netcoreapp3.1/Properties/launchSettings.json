@@ -1,4 +1,4 @@
-﻿{
+{
   "$schema": "http://json.schemastore.org/launchsettings.json",
   "iisSettings": {
     "windowsAuthentication": false,
@@ -16,13 +16,21 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
+    "CovidBot": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "http://localhost:5000"
+    },
     "EchoBot": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "https://localhost:3979;http://localhost:3978",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "applicationUrl": "https://localhost:3979;http://localhost:3978"
     }
   }
 }

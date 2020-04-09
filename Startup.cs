@@ -30,12 +30,17 @@ namespace Microsoft.BotBuilderSamples
         {
             services.AddControllers().AddNewtonsoftJson();
 
-
+            services.AddControllers();
             // Create the Bot Framework Adapter with error handling enabled.
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
             services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
-
+                options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
+            {
+                builder.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            }));
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
             services.AddTransient<IBot, EchoBot>();
 
@@ -51,7 +56,7 @@ namespace Microsoft.BotBuilderSamples
             {
                 app.UseDeveloperExceptionPage();
             }
-            
+
             app.UseDefaultFiles()
                 .UseStaticFiles()
                 .UseWebSockets()
@@ -62,7 +67,10 @@ namespace Microsoft.BotBuilderSamples
                     endpoints.MapControllers();
                 });
 
-            // app.UseHttpsRedirection();
+             app.UseCors("MyPolicy");
+
+
+             //app.UseHttpsRedirection();
         }
     }
 }
