@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <parameters>
   <parameter name="IIS Web Application Name" description="" value="botwestley" tags="IisApp">
-    <parameterEntry kind="ProviderPath" scope="IisApp" match="^/Users/westleyrotolo/Projects/CoronaBot/obj/Release/netcoreapp3\.1/PubTmp/Out/$" />
+    <parameterEntry kind="ProviderPath" scope="IisApp" match="^C:\\Users\\westl\\source\\repos\\Covid19\\CoronaBot\\obj\\Release\\netcoreapp3\.1\\PubTmp\\Out\\$" />
   </parameter>
 </parameters>

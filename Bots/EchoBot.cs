@@ -371,6 +371,26 @@ namespace Microsoft.BotBuilderSamples.Bots
 
                                         break;
                                     }
+                                case IntentLUIS.ULTIMENOTIZIE:
+                                    {
+                                        var intent = appDbContext.FAQIntents.Include(x => x.FAQAnswers).Where(x => x.Intent == luisResult.GetTopScoringIntent().intent).FirstOrDefault();
+                                        var answers = intent.FAQAnswers.Where(x => !string.IsNullOrWhiteSpace(x.Answer)).ToList();
+                                        var news = appDbContext.FeedRss.Include(x => x.FeedItems).SelectMany(x => x.FeedItems).OrderByDescending(x => x.PubDate).Take(5).ToList();
+                                        var cardActions = new List<CardAction>();
+                                        foreach (var n in news)
+                                        {
+                                            cardActions.Add(new CardAction(ActionTypes.OpenUrl, n.Title, value: n.Link));
+                                        }
+                                        var h = new HeroCard
+                                        {
+                                            Buttons = cardActions,
+                                            Title = "Notizie",
+                                            Text = string.Join(" \n\n", answers.Select(f => f.Answer))
+                                        };
+                                        await turnContext.SendActivityAsync(MessageFactory.Attachment(h.ToAttachment()), cancellationToken);
+
+                                        break;
+                                    }
                                 case IntentLUIS.REPORTCONTAGI:
                                     {
                                          string culture = "it-IT"; 
