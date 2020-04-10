@@ -127,3 +127,10 @@
 /Users/westleyrotolo/Projects/CoronaBot/bin/Debug/netcoreapp3.1/MySqlConnector.dll
 /Users/westleyrotolo/Projects/CoronaBot/bin/Debug/netcoreapp3.1/Pomelo.EntityFrameworkCore.MySql.dll
 /Users/westleyrotolo/Projects/CoronaBot/bin/Debug/netcoreapp3.1/Pomelo.JsonObject.dll
+/Users/westleyrotolo/Projects/CoronaBot/bin/Debug/netcoreapp3.1/System.Net.Http.Formatting.dll
+/Users/westleyrotolo/Projects/CoronaBot/bin/Debug/netcoreapp3.1/System.Web.Http.dll
+/Users/westleyrotolo/Projects/CoronaBot/bin/Debug/netcoreapp3.1/System.Web.Http.WebHost.dll
+/Users/westleyrotolo/Projects/CoronaBot/bin/Debug/netcoreapp3.1/Microsoft.Toolkit.dll
+/Users/westleyrotolo/Projects/CoronaBot/bin/Debug/netcoreapp3.1/Microsoft.Toolkit.Parsers.dll
+/Users/westleyrotolo/Projects/CoronaBot/bin/Debug/netcoreapp3.1/System.ComponentModel.Annotations.dll
+/Users/westleyrotolo/Projects/CoronaBot/bin/Debug/netcoreapp3.1/System.ServiceModel.Syndication.dll

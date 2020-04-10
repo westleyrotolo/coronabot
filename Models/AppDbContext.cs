@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoronaBot.Models
@@ -23,5 +27,7 @@ namespace CoronaBot.Models
         public DbSet<UserQuestion> UserQuestions { get; set; }
         public DbSet<ProvinceCovidStats> ProvinceCovidStats { get; set; }
         public DbSet<RegionCovidStats> RegionCovidStats { get; set; }
+        public DbSet<FeedItem> FeedItems { get; set; }
+        public DbSet<FeedRss> FeedRss { get; set; }
     }
 }

@@ -12,6 +12,9 @@ using System.Net.Http.Headers;
 using MimeKit;
 using System.Net.Http;
 using System.Diagnostics;
+using System.Xml;
+using System.ServiceModel.Syndication;
+using Microsoft.Toolkit.Parsers.Rss;
 
 namespace CoronaBot.Controllers
 {
@@ -96,8 +99,8 @@ namespace CoronaBot.Controllers
                         SubCategory = x.SubCategory ?? "",
                         Questions = string.Join("\n", x.FAQQuestions.Select(y => y.Question)),
                         Filename = x.FAQAnswers.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x.Filename)).Filename ?? "",
-                        Filepath = (x.FAQAnswers.Any(x=>!string.IsNullOrWhiteSpace(x.Filepath)) ? "/Download/"+x.Intent : "")
-                        
+                        Filepath = (x.FAQAnswers.Any(x => !string.IsNullOrWhiteSpace(x.Filepath)) ? "/Download/" + x.Intent : "")
+
                     })
                     .ToList();
                 return Ok(faqIntents);
@@ -113,7 +116,7 @@ namespace CoronaBot.Controllers
         {
             try
             {
-                var f = appDbContext.FAQIntents.Include(x => x.FAQQuestions).Include(x=>x.FAQAnswers).First(x => x.Id == id);
+                var f = appDbContext.FAQIntents.Include(x => x.FAQQuestions).Include(x => x.FAQAnswers).First(x => x.Id == id);
                 if (f.FAQQuestions != null)
                     foreach (var i in f.FAQQuestions)
                     {
@@ -160,7 +163,7 @@ namespace CoronaBot.Controllers
                     {
                         foreach (var uq in userQuestions)
                         {
-                            uq.Intent = intentQuestion.Intent.ToUpper() ;
+                            uq.Intent = intentQuestion.Intent.ToUpper();
                             appDbContext.Update(uq);
                         }
                         await appDbContext.AddAsync(q);
@@ -212,7 +215,7 @@ namespace CoronaBot.Controllers
         {
             using (var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var intents = await client.Intents.GetAllAsync(appId, appVersion,0 , 1000);
+                var intents = await client.Intents.GetAllAsync(appId, appVersion, 0, 1000);
                 intents.ToList().ForEach(x => Debug.WriteLine(x.Name));
                 var i = intents.Where(x => x.Name.ToLower().Equals(intent.Trim().ToLower())).ToList();
                 if (i == null || i.Count == 0)
@@ -230,7 +233,7 @@ namespace CoronaBot.Controllers
 
                 }
                 var addExamples = await client.Examples.AddBatchAsync(appId, appVersion, examples.ToArray());
-                return (!addExamples.Any(x => x.HasError),string.Join(',',addExamples.SelectMany(x=>x.Error?.Message ?? "")));
+                return (!addExamples.Any(x => x.HasError), string.Join(',', addExamples.SelectMany(x => x.Error?.Message ?? "")));
 
             }
 
@@ -254,13 +257,13 @@ namespace CoronaBot.Controllers
                 using (var client = new LuisProgClient(SubscriptionKey, Region))
                 {
 
-                    var intents = await client.Intents.GetAllAsync(appId, appVersion,0,1000);
-                    if (intents.Count(x => x.Name.ToLower().Equals(intent.Trim().ToLower())) == 0 )
+                    var intents = await client.Intents.GetAllAsync(appId, appVersion, 0, 1000);
+                    if (intents.Count(x => x.Name.ToLower().Equals(intent.Trim().ToLower())) == 0)
                         return true;
-                    await client.Intents.DeleteAsync(intents.FirstOrDefault(x=>x.Name.ToUpper().Equals(intent.Trim().ToUpper())).Id,appId,appVersion);
+                    await client.Intents.DeleteAsync(intents.FirstOrDefault(x => x.Name.ToUpper().Equals(intent.Trim().ToUpper())).Id, appId, appVersion);
                     return true;
                 }
-                    
+
             }
             catch (Exception ex)
             {
@@ -305,7 +308,7 @@ namespace CoronaBot.Controllers
             }
         }
         [HttpGet("attachment/{intent}/download")]
-        public async Task<IActionResult> DownloadAttachment(string intent )
+        public async Task<IActionResult> DownloadAttachment(string intent)
         {
             try
             {
@@ -314,7 +317,7 @@ namespace CoronaBot.Controllers
                         .Where(x => x.Intent.ToUpper().Equals(intent.ToUpper()))
                         .First();
                 var attachment = fAQIntent.FAQAnswers.Where(x => !string.IsNullOrWhiteSpace(x.Filepath)).First().Filepath;
-               if (System.IO.File.Exists(attachment))
+                if (System.IO.File.Exists(attachment))
                 {
                     var memory = new MemoryStream();
                     using (var stream = new FileStream(attachment, FileMode.Open))
@@ -333,7 +336,7 @@ namespace CoronaBot.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message  +" " + ex.InnerException?.Message ?? "");
+                return BadRequest(ex.Message + " " + ex.InnerException?.Message ?? "");
             }
         }
 
@@ -349,9 +352,9 @@ namespace CoronaBot.Controllers
                 if (!string.IsNullOrEmpty(faqIntent.Intent)
                      && (!string.IsNullOrEmpty(faqIntent.Questions))
                     && (!string.IsNullOrWhiteSpace(faqIntent.Answers) || (!string.IsNullOrWhiteSpace(faqIntent.Filepath))))
-               {
+                {
                     faqIntent.Intent = faqIntent.Intent.ToUpper();
-                    if (appDbContext.FAQIntents.Count(x=>x.Intent.ToUpper().Equals(faqIntent.Intent.ToUpper())) > 0)
+                    if (appDbContext.FAQIntents.Count(x => x.Intent.ToUpper().Equals(faqIntent.Intent.ToUpper())) > 0)
                     {
                         f = appDbContext.FAQIntents
                             .Include(x => x.FAQAnswers)
@@ -380,7 +383,7 @@ namespace CoronaBot.Controllers
                     if (faqIntent.Answers.IndexOf("\n\n") == -1)
                         faqIntent.Answers += "\n\n";
                     var questions = faqIntent.Questions.Split("?")
-                                    .Where(x=>!string.IsNullOrWhiteSpace(x))
+                                    .Where(x => !string.IsNullOrWhiteSpace(x))
                                     .Select(x => x.TrimStart('\n').Trim() + "?")
                                     .ToList();
                     var answers = faqIntent.Answers.Split("\n\n")
@@ -398,8 +401,8 @@ namespace CoronaBot.Controllers
                     else
                         foreach (var a in answers)
                         {
-                           if (!string.IsNullOrWhiteSpace(a))
-                           {
+                            if (!string.IsNullOrWhiteSpace(a))
+                            {
                                 var ans = a.TrimStart('\n');
                                 var fa = new FAQAnswer();
 
@@ -421,7 +424,7 @@ namespace CoronaBot.Controllers
                         f.FAQQuestions.Add(fq);
                         await appDbContext.AddAsync(fq);
                     }
-                    var added = await ShoulAddBatchExample(f.Intent,questions);
+                    var added = await ShoulAddBatchExample(f.Intent, questions);
                     if (added.success)
                     {
                         await appDbContext.SaveChangesAsync();
@@ -486,7 +489,7 @@ namespace CoronaBot.Controllers
             {
                 using (var httpClient = new HttpClient())
                 {
-                    var  x = appDbContext.RegionCovidStats.ToList();
+                    var x = appDbContext.RegionCovidStats.ToList();
                     appDbContext.RegionCovidStats.RemoveRange(x);
                     var r = await httpClient.GetAsync("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-json/dpc-covid19-ita-regioni.json");
                     if (r.IsSuccessStatusCode)
@@ -510,7 +513,7 @@ namespace CoronaBot.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message+" "+ex.InnerException?.Message ?? string.Empty);
+                return StatusCode(500, ex.Message + " " + ex.InnerException?.Message ?? string.Empty);
 
             }
         }
@@ -549,6 +552,91 @@ namespace CoronaBot.Controllers
                 return StatusCode(500, ex.Message + " " + ex.InnerException?.Message ?? string.Empty);
 
             }
+        }
+
+        [HttpGet("rss")]
+        public async Task<IActionResult> SeedFeedRSS()
+        {
+            try
+            {
+                var feeds = appDbContext.FeedRss.ToList();
+                foreach (var feed in feeds)
+                {
+                    if (feed.FeedItems == null)
+                        feed.FeedItems = new List<FeedItem>();
+                    var fs = await ParseRSS(feed.Link);
+                    fs.ForEach(x =>
+                    {
+                        x.Author = feed.Title;
+                        if (appDbContext.FeedItems.Count(a=>a.Link == x.Link)>0)
+                        {
+                            appDbContext.Remove(x);
+                            appDbContext.SaveChanges();
+                        }
+
+                        feed.FeedItems.Add(x);
+                    });
+
+                }
+                await appDbContext.SaveChangesAsync();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message + " " + ex.InnerException?.Message ?? "");
+            }
+            
+        }
+
+        [HttpPost("rss")]
+        public async Task<IActionResult> GetFeedRSS([FromBody]FeedSearch feedSearch)
+        {
+            try
+            {
+                var items = appDbContext.FeedRss.Include(x=>x.FeedItems).SelectMany(x => x.FeedItems).OrderByDescending(x=>x.PubDate).Take(50).ToList();
+                return Ok(items);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message + " " + ex.InnerException?.Message ?? string.Empty);
+            }
+        }
+
+        public async Task<List<FeedItem>> ParseRSS(string url)
+        {
+            string feed = null;
+            var feeds = new List<FeedItem>();
+            using (var client = new HttpClient())
+            {
+                try
+                {
+                    feed = await client.GetStringAsync(url);
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+
+            if (feed != null)
+            {
+                var parser = new RssParser();
+                var rss = parser.Parse(feed);
+
+                foreach (var element in rss)
+                {
+                    var item = new FeedItem
+                    {
+                        Link = element.FeedUrl,
+                        Title = element.Title,
+                        Media = element.MediaUrl,
+                        Summary = element.Content,
+                        PubDate = element.PublishDate
+                    };
+                    feeds.Add(item);
+                }
+            }
+            return feeds;
         }
     }
 }
