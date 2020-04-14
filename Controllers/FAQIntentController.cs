@@ -22,7 +22,7 @@ namespace CoronaBot.Controllers
     [ApiController]
     public class FAQIntentController : Controller
     {
-        private readonly string SubscriptionKey = "69d6501f607c47718930376a980536bc";
+        private readonly string SubscriptionKey = "b1bcedf3591a4d2eb596fe1c38a014ee";
         private readonly Regions Region = Regions.WestUS;
         private readonly string appVersion = "0.1";
         private readonly string appId = "35b61d64-1957-4240-80f5-4c59fd4f32b2";
@@ -85,8 +85,8 @@ namespace CoronaBot.Controllers
             {
                 var faqIntents = appDbContext.FAQIntents.Include(x => x.FAQAnswers).Include(x => x.FAQQuestions)
                     .Where(x => (!intentFaqViewModel.ByIntent || x.Intent.ToUpper().Contains(intentFaqViewModel.Intent.ToUpper()))
-                            && (!intentFaqViewModel.ByAnswer || x.FAQAnswers.Select(x => x.Answer.ToLower()).Any(y => y.Contains(intentFaqViewModel.Question.ToLower())))
-                            && (!intentFaqViewModel.ByCategory || x.SubCategory.ToLower().Contains(intentFaqViewModel.Category.ToLower()))
+                            && (!intentFaqViewModel.ByAnswer || x.FAQAnswers.Select(x => x.Answer.ToLower()).Any(y => y.Contains(intentFaqViewModel.Answer.ToLower())))
+                            && (!intentFaqViewModel.ByCategory || x.Category.ToLower().Contains(intentFaqViewModel.Category.ToLower()))
                             && (!intentFaqViewModel.BySubCategory || x.SubCategory.ToLower().Contains(intentFaqViewModel.SubCategory.ToLower()))
                             && (!intentFaqViewModel.ByQuestion || x.FAQQuestions.Select(x => x.Question.ToLower()).Any(y => y.Contains(intentFaqViewModel.Question.ToLower()))))
                     .OrderByDescending(x => x.Id)
@@ -213,9 +213,12 @@ namespace CoronaBot.Controllers
         }
         public async Task<(bool success, string message)> ShoulAddBatchExample(string intent, List<string> questions)
         {
+            try
+            {
+
             using (var client = new LuisProgClient(SubscriptionKey, Region))
             {
-                var intents = await client.Intents.GetAllAsync(appId, appVersion, 0, 1000);
+                var intents = await client.Intents.GetAllAsync(appId, appVersion,0, 500);
                 intents.ToList().ForEach(x => Debug.WriteLine(x.Name));
                 var i = intents.Where(x => x.Name.ToLower().Equals(intent.Trim().ToLower())).ToList();
                 if (i == null || i.Count == 0)
@@ -236,18 +239,31 @@ namespace CoronaBot.Controllers
                 return (!addExamples.Any(x => x.HasError), string.Join(',', addExamples.SelectMany(x => x.Error?.Message ?? "")));
 
             }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
 
         }
         public async Task ShouldAddNewIntentTest(string IntentName)
         {
-            using (LuisProgClient client = new LuisProgClient(SubscriptionKey, Region))
+            try
             {
-                var intents = await client.Intents.GetAllAsync(appId, appVersion, 0, 1000);
-                var i = intents.Where(x => x.Name.ToLower().Equals(IntentName.Trim().ToLower())).ToList();
-                if (i != null && i.Count > 0)
-                    await client.Intents.DeleteAsync(i.FirstOrDefault().Id, appId, appVersion);
-                var newId = await client.Intents.AddAsync(IntentName, appId, appVersion);
+                using (LuisProgClient client = new LuisProgClient(SubscriptionKey, Region))
+                {
+                   // var intents = await client.Intents.GetAllAsync(appId, appVersion);
+                   // var i = intents.Where(x => x.Name.ToLower().Equals(IntentName.Trim().ToLower())).ToList();
+                   // if (i != null && i.Count > 0)
+                   //     await client.Intents.DeleteAsync(i.FirstOrDefault().Id, appId, appVersion);
+                    var newId = await client.Intents.AddAsync(IntentName, appId, appVersion);
+                }
             }
+            catch (Exception ex)
+            {
+                string x = ex.Message;
+            }
+         
         }
 
         public async Task<bool> DeleteIntent(string intent)
@@ -256,8 +272,7 @@ namespace CoronaBot.Controllers
             {
                 using (var client = new LuisProgClient(SubscriptionKey, Region))
                 {
-
-                    var intents = await client.Intents.GetAllAsync(appId, appVersion, 0, 1000);
+                    var intents = await  client.Intents.GetAllAsync(appId, appVersion, 0, 500);
                     if (intents.Count(x => x.Name.ToLower().Equals(intent.Trim().ToLower())) == 0)
                         return true;
                     await client.Intents.DeleteAsync(intents.FirstOrDefault(x => x.Name.ToUpper().Equals(intent.Trim().ToUpper())).Id, appId, appVersion);

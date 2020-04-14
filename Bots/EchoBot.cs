@@ -38,7 +38,7 @@ namespace Microsoft.BotBuilderSamples.Bots
             var fileData = Convert.ToBase64String(File.ReadAllBytes(fAQAnswer.Filepath));
             var contentType = MimeTypes.GetMimeType(fAQAnswer.Filepath);
             return new Attachment
-            {
+            { 
                 Name = string.IsNullOrWhiteSpace(fAQAnswer.Filename) ? "  " : fAQAnswer.Filename,
                 ContentType = contentType,
                 ContentUrl = $"data:{contentType};base64,{fileData}",
@@ -120,12 +120,16 @@ namespace Microsoft.BotBuilderSamples.Bots
             };
 
         }
-        protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
+        async Task SendMessage(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             try
             {
                 await turnContext.SendActivityAsync(new Activity { Type = "typing" });
-               
+
+
+                var tour = await Tour(turnContext, cancellationToken);
+                if (tour)
+                    return;
                 var user = appDbContext.Users.Include(x => x.SelfCertifications).Where(x => x.Id == turnContext.Activity.From.Id).FirstOrDefault();
                 if (user == null)
                 {
@@ -135,33 +139,36 @@ namespace Microsoft.BotBuilderSamples.Bots
 
                     await appDbContext.SaveChangesAsync();
                 }
-                
+
                 if (user.SelfCertifications != null
                     && user.SelfCertifications.Count > 0
                     && user.SelfCertifications.Last().IsOpen)
                 {
-                    var selfCertification = SelfCertificationManager.SetData(turnContext.Activity.Text, user.SelfCertifications.Last());
+                    string text = turnContext.Activity.Text ?? (turnContext.Activity.Value?.ToString() ?? string.Empty);
+                    var selfCertification = SelfCertificationManager.SetData(text, user.SelfCertifications.Last());
 
-                    if (turnContext.Activity.Text.Trim().ToLower().Equals("vai indietro")
-                        || turnContext.Activity.Text.Trim().ToLower().Equals("indietro"))
+                    if (text.Trim().ToLower().Equals("vai indietro")
+                        || text.Trim().ToLower().Equals("indietro"))
                     {
                         selfCertification.Step = Math.Max(0, selfCertification.Step - 2);
+                        selfCertification.NextStepType = selfCertification.StepType;
                         appDbContext.Update(selfCertification);
                         await appDbContext.SaveChangesAsync();
                         await turnContext.SendActivityAsync(MessageFactory.Text(SelfCertificationManager.Steps[selfCertification.Step]));
                     }
-                    else if (turnContext.Activity.Text.Trim().ToLower().Equals("scarica")
-                        || turnContext.Activity.Text.Trim().ToLower().Equals("scarica"))
+                    else if (text.Trim().ToLower().Equals("scarica")
+                        || text.Trim().ToLower().Equals("scarica"))
                     {
                         selfCertification.Step--;
+                        selfCertification.NextStepType = selfCertification.StepType;
                         selfCertification = SelfCertificationManager.SetData("", user.SelfCertifications.Last());
                         selfCertification.IsOpen = false;
                         appDbContext.Update(selfCertification);
                         await appDbContext.SaveChangesAsync();
                         await turnContext.SendActivityAsync(MessageFactory.Attachment(GetCustomDoc(selfCertification), "Puoi scaricare la tua autocertificazione cliccando qui:"), cancellationToken);
                     }
-                    else if (turnContext.Activity.Text.Trim().ToLower().Equals("annulla")
-                        || turnContext.Activity.Text.Trim().ToLower().Equals("stop"))
+                    else if (text.Trim().ToLower().Equals("annulla")
+                        || text.Trim().ToLower().Equals("stop"))
                     {
 
                         selfCertification.IsOpen = false;
@@ -173,16 +180,205 @@ namespace Microsoft.BotBuilderSamples.Bots
                     }
                     else
                     {
-                        if (selfCertification.Step < 22)
+                        if (selfCertification.NextStepType != StepType.Download)
                         {
                             appDbContext.Update(selfCertification);
                             await appDbContext.SaveChangesAsync();
-                            await turnContext.SendActivityAsync(MessageFactory.Text(SelfCertificationManager.Steps[selfCertification.Step]));
+
+                            if (selfCertification.NextStepType == StepType.DomicileAsk)
+                            {
+                                var heroCard = new HeroCard
+                                {
+                                    Title = string.Empty,
+                                    Text = SelfCertificationManager.Steps[selfCertification.Step],
+                                    Buttons = new List<CardAction>
+                                    {
+                                        new CardAction
+                                        {
+                                            Title = "Sì",
+                                            Text = "Sì",
+                                            Value = "Sì",
+                                            Type = ActionTypes.MessageBack
+                                        },
+                                        new CardAction
+                                        {
+                                            Title = "No",
+                                            Text = "No",
+                                            Value = "No",
+                                            Type = ActionTypes.MessageBack
+                                        }
+                                    }
+
+                                };
+                                await turnContext.SendActivityAsync(MessageFactory.Attachment(heroCard.ToAttachment()), cancellationToken);
+
+                            }
+                            else if (selfCertification.NextStepType == StepType.IdentificationType)
+                            {
+                                var heroCard = new HeroCard
+                                {
+                                    Title = string.Empty,
+                                    Text = SelfCertificationManager.Steps[selfCertification.Step],
+                                    Buttons = new List<CardAction>
+                                    {
+                                        new CardAction
+                                        {
+                                            Title = "Carta d'Identità",
+                                            Text = "Carta d'Identità",
+                                            Value = "Carta d'Identità",
+                                            Type = ActionTypes.MessageBack
+                                        },
+                                        new CardAction
+                                        {
+                                            Title = "Passaporto",
+                                            Text = "Passaporto",
+                                            Value = "Passaporto",
+                                            Type = ActionTypes.MessageBack
+                                        },
+                                        new CardAction
+                                        {
+                                            Title = "Patente",
+                                            Text = "Patente",
+                                            Value = "Patente",
+                                            Type = ActionTypes.MessageBack
+                                        }
+                                    }
+
+                                };
+                                await turnContext.SendActivityAsync(MessageFactory.Attachment(heroCard.ToAttachment()), cancellationToken);
+
+                            }
+                            else if (selfCertification.NextStepType == StepType.StartPlaceAsk)
+                            {
+                                var heroCard = new HeroCard
+                                {
+                                    Title = string.Empty,
+                                    Text = SelfCertificationManager.Steps[selfCertification.Step],
+                                    Buttons = new List<CardAction>
+                                    {
+                                        new CardAction
+                                        {
+                                            Title = "Sì",
+                                            Text = "Sì",
+                                            Value = "Sì",
+                                            Type = ActionTypes.MessageBack
+                                        },
+                                        new CardAction
+                                        {
+                                            Title = "No",
+                                            Text = "No",
+                                            Value = "No",
+                                            Type = ActionTypes.MessageBack
+                                        }
+                                    }
+
+                                };
+                                await turnContext.SendActivityAsync(MessageFactory.Attachment(heroCard.ToAttachment()), cancellationToken);
+                            }
+                            else if (selfCertification.NextStepType == StepType.EndPlaceAsk)
+                            {
+                                var heroCard = new HeroCard
+                                {
+                                    Title = string.Empty,
+                                    Text = SelfCertificationManager.Steps[selfCertification.Step],
+                                    Buttons = new List<CardAction>
+                                    {
+                                        new CardAction
+                                        {
+                                            Title = "Sì",
+                                            Text = "Sì",
+                                            Value = "Sì",
+                                            Type = ActionTypes.MessageBack
+                                        },
+                                        new CardAction
+                                        {
+                                            Title = "No",
+                                            Text = "No",
+                                            Value = "No",
+                                            Type = ActionTypes.MessageBack
+                                        }
+                                    }
+
+                                };
+                                await turnContext.SendActivityAsync(MessageFactory.Attachment(heroCard.ToAttachment()), cancellationToken);
+                            }
+                            else if (selfCertification.NextStepType == StepType.StartRegion)
+                            {
+                                var heroCard = new HeroCard
+                                {
+                                    Title = string.Empty,
+                                    Text = SelfCertificationManager.Steps[selfCertification.Step],
+                                    Buttons = new List<CardAction>()
+                                };
+                                foreach (var r in SelfCertificationManager.Regions)
+                                {
+                                    var cardAction = new CardAction
+                                    {
+                                        Title = r,
+                                        Text = r,
+                                        Value = r,
+                                        Type = ActionTypes.MessageBack
+                                    };
+                                    heroCard.Buttons.Add(cardAction);
+                                }
+                                await turnContext.SendActivityAsync(MessageFactory.Attachment(heroCard.ToAttachment()), cancellationToken);
+                            }
+                            else if (selfCertification.NextStepType == StepType.EndRegion)
+                            {
+                                var heroCard = new HeroCard
+                                {
+                                    Title = string.Empty,
+                                    Text = SelfCertificationManager.Steps[selfCertification.Step],
+                                    Buttons = new List<CardAction>()
+                                };
+                                foreach (var r in SelfCertificationManager.Regions)
+                                {
+                                    var cardAction = new CardAction
+                                    {
+                                        Title = r,
+                                        Text = r,
+                                        Value = r,
+                                        Type = ActionTypes.MessageBack
+                                    };
+                                    heroCard.Buttons.Add(cardAction);
+                                }
+                                await turnContext.SendActivityAsync(MessageFactory.Attachment(heroCard.ToAttachment()), cancellationToken);
+
+                            }
+                            else if (selfCertification.NextStepType == StepType.ChooseMotive)
+                            {
+                                var heroCard = new HeroCard
+                                {
+                                    Title = string.Empty,
+                                    Text = SelfCertificationManager.Steps[selfCertification.Step],
+                                    Buttons = new List<CardAction>()
+                                };
+                                foreach (var r in SelfCertificationManager.ChooseMotive)
+                                {
+                                    var cardAction = new CardAction
+                                    {
+                                        Title = r,
+                                        Text = r,
+                                        Value = r,
+                                        Type = ActionTypes.MessageBack
+                                    };
+                                    heroCard.Buttons.Add(cardAction);
+                                }
+                                await turnContext.SendActivityAsync(MessageFactory.Attachment(heroCard.ToAttachment()), cancellationToken);
+                            }
+                            else
+                            {
+                                await turnContext.SendActivityAsync(MessageFactory.Text(SelfCertificationManager.Steps[selfCertification.Step]));
+
+                            }
+
 
                         }
                         else
                         {
                             selfCertification.IsOpen = false;
+
+                            await turnContext.SendActivityAsync(MessageFactory.Text("Grazie. \n\nA momenti potrai scaricare la tua autocertificazione"));
                             await appDbContext.SaveChangesAsync();
                             await turnContext.SendActivityAsync(MessageFactory.Attachment(GetCustomDoc(selfCertification), "Puoi scaricare la tua autocertificazione cliccando qui:"), cancellationToken);
 
@@ -204,22 +400,33 @@ namespace Microsoft.BotBuilderSamples.Bots
                             appDbContext.Add(_user);
                             await appDbContext.SaveChangesAsync();
                         }
-                        await turnContext.SendActivityAsync(MessageFactory.Text("Ciao, qui puoi trovare informazioni utili riguardanti il COVID-19, compilare un nuovo modulo di autocertificazione o scaricarne uno vuoto"), cancellationToken);
-
+                        await StartTour(turnContext, cancellationToken);
                     }
                     else
                     {
 
-
+                        turnContext.Activity.Text = turnContext.Activity.Text?.ToLower() ?? string.Empty;
                         var luisResult = await luisRecognizer.RecognizeAsync(turnContext, new CancellationToken());
                         var score = luisResult.GetTopScoringIntent().score;
-
-                        if (score < .15)
+                        var _intent = luisResult.GetTopScoringIntent().intent;
+                        if (_intent == IntentLUIS.NONE)
                         {
-                            await IDK(turnContext, cancellationToken);
+                            if (luisResult.Intents.Count>1)
+                            {
+                                var newIntent = luisResult.Intents.OrderByDescending(x => x.Value.Score).Skip(1).Take(1).FirstOrDefault();
+                                if (newIntent.Value.Score>.5)
+                                {
+                                    _intent = newIntent.Key;
+                                }
+                            }
                         }
-                        else 
-                            switch (luisResult.GetTopScoringIntent().intent)
+
+                        if (score < .1)
+                        {
+                            await StartTour(turnContext, cancellationToken);
+                        }
+                        else
+                            switch (_intent)
                             {
                                 case IntentLUIS.SCARICARE:
                                     await turnContext.SendActivityAsync(MessageFactory.Attachment(GetCustomDoc(new SelfCertification())), cancellationToken);
@@ -229,6 +436,8 @@ namespace Microsoft.BotBuilderSamples.Bots
 
                                         var selfCertification = new SelfCertification();
                                         selfCertification.Step = 1;
+                                        selfCertification.StepType = StepType.Name;
+                                        selfCertification.NextStepType = StepType.Name;
                                         selfCertification.IsOpen = true;
                                         if (user.SelfCertifications == null)
                                             user.SelfCertifications = new List<SelfCertification>();
@@ -248,16 +457,14 @@ namespace Microsoft.BotBuilderSamples.Bots
                                 case IntentLUIS.USCIRE:
                                     {
 
-                                        if (luisResult.GetTopScoringIntent().score > .5)
+                                        var attchment = new Attachment
                                         {
-                                            var attchment = new Attachment
-                                            {
-                                                Name = @"No.",
-                                                ContentType = "image/png",
-                                                ContentUrl = $"{CovidBot.Helpers.CovidImage.deluca}",
-                                            };
-                                            await turnContext.SendActivityAsync(MessageFactory.Attachment(attchment));
-                                        }
+                                            Name = @"No.",
+                                            ContentType = "image/png",
+                                            ContentUrl = $"{CovidBot.Helpers.CovidImage.deluca}",
+                                        };
+                                        await turnContext.SendActivityAsync(MessageFactory.Attachment(attchment));
+                                        
                                         break;
                                     }
                                 case IntentLUIS.GIORNALI:
@@ -359,11 +566,11 @@ namespace Microsoft.BotBuilderSamples.Bots
                                         await turnContext.SendActivityAsync(MessageFactory.Text(string.Join(" \n\n", answers.Select(f => f.Answer))), cancellationToken);
                                         var rnd = new Random();
                                         var q = string.Empty;
-                                        foreach (var i in Enumerable.Range(0,4))
+                                        foreach (var i in Enumerable.Range(0, 4))
                                         {
                                             var r = rnd.Next(intents.Count - 1);
                                             var randomIntent = intents[r];
-                                            var rq = rnd.Next(randomIntent.FAQQuestions.Count-1);
+                                            var rq = rnd.Next(randomIntent.FAQQuestions.Count - 1);
                                             var question = randomIntent.FAQQuestions[rq].Question;
                                             q += question + " \n\n";
                                         }
@@ -393,7 +600,7 @@ namespace Microsoft.BotBuilderSamples.Bots
                                     }
                                 case IntentLUIS.REPORTCONTAGI:
                                     {
-                                         string culture = "it-IT"; 
+                                        string culture = "it-IT";
                                         Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(culture);
                                         Thread.CurrentThread.CurrentUICulture = CultureInfo.CreateSpecificCulture(culture);
 
@@ -403,13 +610,17 @@ namespace Microsoft.BotBuilderSamples.Bots
                                         {
                                             var dstr = luisResult.Entities["datetime"][0].ToString();
                                             var d = Newtonsoft.Json.JsonConvert.DeserializeObject<TempEntity>(dstr);
-                                            DateTime.TryParse(d.timex.FirstOrDefault().Replace("XXXX","2020"), out date);
+                                            DateTime.TryParse(d.timex.FirstOrDefault().Replace("XXXX", "2020"), out date);
                                         }
                                         var startDate = new DateTime(2020, 03, 02);
                                         if (date.Date > DateTime.Now)
                                             date = DateTime.Now;
                                         if (date.Date < startDate.Date)
                                             date = startDate.Date;
+                                        if (date.Date == DateTime.Now.Date && DateTime.Now.Hour<18)
+                                        {
+                                            date = date.AddDays(-1);
+                                        }
                                         Attachment attachment;
                                         string division = "";
                                         if (turnContext.Activity.Text.ToLower().Contains("provincia")
@@ -420,7 +631,7 @@ namespace Microsoft.BotBuilderSamples.Bots
                                             {
                                                 ContentUrl = $"https://github.com/pcm-dpc/COVID-19/raw/master/schede-riepilogative/province/dpc-covid19-ita-scheda-province-{date.ToString("yyyyMMdd")}.pdf",
                                                 ContentType = "application/pdf",
-                                                Name = "Report"
+                                                Name = "Report Covid-19 Italia"
                                             };
                                             division = " suddiviso per province";
                                         }
@@ -430,10 +641,10 @@ namespace Microsoft.BotBuilderSamples.Bots
                                             {
                                                 ContentUrl = $"https://github.com/pcm-dpc/COVID-19/raw/master/schede-riepilogative/regioni/dpc-covid19-ita-scheda-regioni-{date.ToString("yyyyMMdd")}.pdf",
                                                 ContentType = "application/pdf",
-                                                Name = "Report"
+                                                Name = "Report Covid-19 Italia"
                                             };
                                         }
-                                        
+
                                         var temporal = $"di {date.ToString("dddd dd MMMM yyyy")}";
                                         if (date.Date == DateTime.Now.Date)
                                             temporal = "di oggi";
@@ -448,20 +659,20 @@ namespace Microsoft.BotBuilderSamples.Bots
                                     }
                                 case IntentLUIS.NONE:
                                     {
-                                        await IDK(turnContext, cancellationToken);
+                                        await StartTour(turnContext, cancellationToken);
                                         break;
                                     }
                                 default:
                                     {
-                                        var intent = appDbContext.FAQIntents.Include(x=>x.FAQAnswers).Include(x => x.FAQQuestions).Where(x => x.Intent == luisResult.GetTopScoringIntent().intent).FirstOrDefault();
+                                        var intent = appDbContext.FAQIntents.Include(x => x.FAQAnswers).Include(x => x.FAQQuestions).Where(x => x.Intent == luisResult.GetTopScoringIntent().intent).FirstOrDefault();
                                         if (intent == null)
                                         {
-                                            await IDK(turnContext, cancellationToken);
+                                            await StartTour(turnContext, cancellationToken);
                                             break;
                                         }
                                         var answers = intent.FAQAnswers.Where(x => !string.IsNullOrWhiteSpace(x.Answer)).ToList();
-                                        if (answers.Count>0)
-                                            await turnContext.SendActivityAsync(MessageFactory.Text(string.Join(" \n\n",answers.Select(f=>f.Answer))), cancellationToken);
+                                        if (answers.Count > 0)
+                                            await turnContext.SendActivityAsync(MessageFactory.Text(string.Join(" \n\n", answers.Select(f => f.Answer))), cancellationToken);
                                         var attachment = intent.FAQAnswers.Where(x => !string.IsNullOrWhiteSpace(x.Filepath)).ToList();
                                         if (attachment.Count > 0)
                                             await turnContext.SendActivityAsync(MessageFactory.Attachment(GetAttachment(attachment.First())), cancellationToken);
@@ -486,9 +697,14 @@ namespace Microsoft.BotBuilderSamples.Bots
             }
             catch (Exception ex)
             {
-                  string x = ex.Message;
+                string x = ex.Message;
             }
-            // await turnContext.SendActivityAsync(MessageFactory.Attachment(new Attachment("application/pdf", "https://static.fanpage.it/wp-content/uploads/2020/03/nuovo-modello-autocertificazione.pdf", name: "Autocertificazione.pdf"), "Puoi scaricare la tua autocertificazione cliccando qui:"), cancellationToken);
+       
+
+        }
+        protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
+        {
+            await SendMessage(turnContext, cancellationToken);
 
         }
         Attachment IDKLinks(string link)
@@ -499,13 +715,93 @@ namespace Microsoft.BotBuilderSamples.Bots
                 Name = "Sito"
             };
         }
+        public async Task<bool> Tour(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
+        {
+            if (turnContext.Activity.Value == null && !turnContext.Activity.Text.StartsWith("[start]"))
+                return false;
+            var value = turnContext.Activity.Value?.ToString() ?? "";
+            if (value.Equals("[linkutili]"))
+            {
+                await IDK(turnContext, cancellationToken);
+                return true;
+            }
+            else if (value.StartsWith("[category]"))
+            {
 
+                var text = value.Replace("[category]", "").ToLower();
+                var subcategories = appDbContext.FAQIntents.Where(x => x.Category.ToLower().Equals(text)).Select(x => x.SubCategory).Distinct();
+                var h = new HeroCard();
+                h.Buttons = new List<CardAction>();
+                foreach (var s in subcategories)
+                {
+                    if (string.IsNullOrWhiteSpace(s))
+                        continue;
+                    var cardAction = new CardAction
+                    {
+                        Type = ActionTypes.MessageBack,
+                        Title = s.ToUpper(),
+                        Value = "[subcategory]" + s
+                    };
+                    h.Buttons.Add(cardAction);
+                }
+                h.Title = "Sotto Categoria";
+                h.Text = "Seleziona una sotto categoria per avere informazioni, oppure scrivi i tuoi dubbi";
+                await turnContext.SendActivityAsync(MessageFactory.Attachment(h.ToAttachment()), cancellationToken);
+                return true;
+            }
+            else if (turnContext.Activity.Value.ToString().StartsWith("[subcategory]"))
+            {
+                var text = value.Replace("[subcategory]", "").ToLower();
+
+                var questions = appDbContext.FAQIntents.Include(x => x.FAQQuestions)
+                    .Where(x => x.SubCategory.ToLower().Equals(text))
+                    .Select(x => x.FAQQuestions[0].Question);
+                var h = new HeroCard();
+                h.Buttons = new List<CardAction>();
+                foreach (var s in questions)
+                {
+
+                    if (string.IsNullOrWhiteSpace(s))
+                        continue;
+                    var cardAction = new CardAction
+                    {
+                        Type = ActionTypes.MessageBack,
+                        Title = s.ToUpper(),
+                        Value = "[answer]" + s
+                    };
+                    h.Buttons.Add(cardAction);
+                }
+                h.Title = "Domanda";
+                h.Text = "Seleziona una domanda per avere informazioni, oppure scrivi i tuoi dubbi";
+                await turnContext.SendActivityAsync(MessageFactory.Attachment(h.ToAttachment()), cancellationToken);
+                return true;
+                 
+            }
+            else if (value.StartsWith("[answer]"))
+            {
+
+                var text = value.Replace("[answer]", "").ToLower();
+                var questions = appDbContext.FAQIntents.Include(x => x.FAQAnswers).Include(x => x.FAQQuestions)
+                            .Where(x => x.FAQQuestions.Any(q => q.Question.ToLower().Equals(text.ToLower())));
+
+                var answer = questions.FirstOrDefault();
+                if (answer!=null)
+                {
+                    await turnContext.SendActivityAsync(MessageFactory.Text(string.Join("\n\n", answer.FAQAnswers.Select(x => x.Answer))));
+                    await StartTour(turnContext, cancellationToken);
+                    return true;
+                }
+
+            }
+            return false;
+
+
+
+
+
+        }
         public async Task IDK(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
-           // await turnContext.SendActivityAsync(MessageFactory.Text("\n\n"), cancellationToken);
-           // await turnContext.SendActivityAsync(MessageFactory.Text("http://www.governo.it/it/faq-iorestoacasa , \n\nhttp://www.salute.gov.it/portale/nuovocoronavirus/dettaglioFaqNuovoCoronavirus.jsp?lingua=italiano&id=228, \n\n"), cancellationToken);
-            //await turnContext.SendActivityAsync(MessageFactory.Carousel(new List<Attachment> { IDKLinks("http://www.governo.it/it/faq-iorestoacasa"), IDKLinks("http://www.salute.gov.it/portale/nuovocoronavirus/dettaglioFaqNuovoCoronavirus.jsp?lingua=italiano&id=228"), IDKLinks("nhttp://opendatadpc.maps.arcgis.com/apps/opsdashboard/index.html#/dae18c330e8e4093bb090ab0aa2b4892") }));
-
             var h = new HeroCard
             {
                 Buttons = new List<CardAction>()
@@ -514,8 +810,8 @@ namespace Microsoft.BotBuilderSamples.Bots
                     new CardAction(ActionTypes.OpenUrl, "Ministero della Salute", value:"http://www.salute.gov.it/portale/nuovocoronavirus/dettaglioFaqNuovoCoronavirus.jsp?lingua=italiano&id=228"),
                     new CardAction(ActionTypes.OpenUrl, "Dashboard Covid", value:"http://opendatadpc.maps.arcgis.com/apps/opsdashboard/index.html#/dae18c330e8e4093bb090ab0aa2b4892")
                 },
-                Title = "Purtroppo non ho capito",
-                Text = "Puoi avere altre informazioni riguardanti il coronavirus consultando le FAQ presenti nei siti istituzionali"
+                Title = "Link Utili",
+                Text = "Puoi avere informazioni riguardanti il coronavirus consultando le FAQ presenti nei siti istituzionali"
             };
             await turnContext.SendActivityAsync(MessageFactory.Attachment(h.ToAttachment()),cancellationToken);
             var count = appDbContext.FAQIntents.Count()-1;
@@ -530,13 +826,76 @@ namespace Microsoft.BotBuilderSamples.Bots
             await turnContext.SendActivityAsync(new Activity { Type = "typing" });
             if (turnContext.Activity.Name == "selfCertification")
             {
-                await turnContext.SendActivityAsync(MessageFactory.Text("Ciao, vuoi compilare un modulo di autocertificazione, o scaricarne uno vuoto?"), cancellationToken);
+                var h = new HeroCard
+                {
+                    Title = "Autocertificazione",
+                    Text = "Vuoi compilare un modulo di autocertificazione o scaricarne uno vuoto?",
+                    Buttons = new List<CardAction>
+                    {
+                        new CardAction
+                        {
+                            Title =  "Compila Autocertificazione",
+                            Text = "Compila Autocertificazione",
+                            Value = "Compila Autocertificazione",
+                            Type = ActionTypes.MessageBack
+                        },
+                         new CardAction
+                        {
+                            Title =  "Scarica Autocertificazione",
+                            Text = "Scarica Autocertificazione",
+                            Value = "Scarica Autocertificazione",
+                            Type = ActionTypes.MessageBack
+                        },
+                    }
+                };
+                await turnContext.SendActivityAsync(MessageFactory.Attachment(h.ToAttachment()), cancellationToken);
+
 
             }
             else if (turnContext.Activity.Name == "askToDeLuca")
             {
-                await turnContext.SendActivityAsync(MessageFactory.Text("Ciao, cosa vuoi sapere riguardo il coronavirus?"), cancellationToken);
+                await StartTour(turnContext, cancellationToken);
             }
+        }
+        async Task StartTour(ITurnContext turnContext,CancellationToken cancellationToken)
+        {
+            var categories = appDbContext.FAQIntents.Where(x=>x.Category.ToLower().Equals("Decreto #IoRestoaCasa")).Select(x => x.Category).Distinct();
+            var h = new HeroCard();
+            h.Buttons = new List<CardAction>();
+            foreach (var c in categories)
+            {
+                if (string.IsNullOrWhiteSpace(c))
+                    continue;
+                var cardAction = new CardAction
+                {
+                    Type = ActionTypes.MessageBack,
+                    Title = c.ToUpper(),
+                    Text = c.ToUpper(),
+                    Value = "[category]" + c
+                };
+                h.Buttons.Add(cardAction);
+            }
+            var cardIDKAction = new CardAction
+            {
+                Type = ActionTypes.MessageBack,
+                Title = "Link Utili",
+                Text = "Link Utili",
+                Value = "[linkutili]"
+            };
+            h.Buttons.Add(cardIDKAction);
+            var cardDonazioni = new CardAction
+            {
+                Type = ActionTypes.OpenUrl,
+                Title = "Donazioni Regione Campania",
+                Text ="Donazioni Regione Campania",
+                Value = "http://www.regione.campania.it/regione/it/news/primo-piano/coronavirus-raccolta-fondi-per-l-emergenza-ecco-il-conto-corrente"
+            };
+            h.Buttons.Add(cardDonazioni);
+            h.Title = "Categorie";
+            h.Subtitle = "Seleziona una categoria per avere informazioni, oppure scrivi i tuoi dubbi";
+            h.Text = "Seleziona una categoria per avere informazioni, oppure scrivi i tuoi dubbi";
+            await turnContext.SendActivityAsync(MessageFactory.Attachment(h.ToAttachment()), cancellationToken);
+
         }
         protected override async Task OnConversationUpdateActivityAsync(ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {

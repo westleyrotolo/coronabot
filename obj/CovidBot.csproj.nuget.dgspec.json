@@ -1,32 +1,28 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\westl\\source\\repos\\Covid19\\CoronaBot\\CovidBot.csproj": {}
+    "/Users/westleyrotolo/Projects/CoronaBot/CovidBot.csproj": {}
   },
   "projects": {
-    "C:\\Users\\westl\\source\\repos\\Covid19\\CoronaBot\\CovidBot.csproj": {
+    "/Users/westleyrotolo/Projects/CoronaBot/CovidBot.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\westl\\source\\repos\\Covid19\\CoronaBot\\CovidBot.csproj",
+        "projectUniqueName": "/Users/westleyrotolo/Projects/CoronaBot/CovidBot.csproj",
         "projectName": "CovidBot",
-        "projectPath": "C:\\Users\\westl\\source\\repos\\Covid19\\CoronaBot\\CovidBot.csproj",
-        "packagesPath": "C:\\Users\\westl\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\westl\\source\\repos\\Covid19\\CoronaBot\\obj\\",
+        "projectPath": "/Users/westleyrotolo/Projects/CoronaBot/CovidBot.csproj",
+        "packagesPath": "/Users/westleyrotolo/.nuget/packages/",
+        "outputPath": "/Users/westleyrotolo/Projects/CoronaBot/obj/",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "D:\\Microsoft\\Xamarin\\NuGet\\",
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+          "/usr/local/share/dotnet/sdk/NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "C:\\Users\\westl\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "/Users/westleyrotolo/.config/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.1"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -144,7 +140,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/3.1.200/RuntimeIdentifierGraph.json"
         }
       }
     }

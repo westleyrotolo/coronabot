@@ -8,6 +8,8 @@ namespace CoronaBot.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public int Step { get; set; }
+        public StepType StepType { get; set; }
+        public StepType NextStepType { get; set; }
         public string Name { get; set; }
         public string DateOfBorn { get; set; }
         public string PlaceOfBorn { get; set; }
@@ -32,5 +34,29 @@ namespace CoronaBot.Models
         public bool X3Necessary { get; set; }
         public bool X4Health {get;set;}
 
+    }
+
+    public enum StepType
+    {
+        Name,
+        DateOfBorn,
+        PlaceOfBorn,
+        Residence,
+        DomicileAsk,
+        Domicile,
+        IdentificationType,
+        IdentificationNumber,
+        IdentificationReleased,
+        IdentificationDate,
+        PhoneNumber,
+        StartPlaceAsk,
+        StartPlace,
+        EndPlaceAsk,
+        EndPlace,
+        StartRegion,
+        EndRegion,
+        ChooseMotive,
+        Note,
+        Download
     }
 }

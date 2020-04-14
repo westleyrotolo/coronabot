@@ -1,4 +1,4 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <sitemanifest>
-  <IisApp path="C:\Users\westl\source\repos\Covid19\CoronaBot\obj\Release\netcoreapp3.1\PubTmp\Out\" />
+  <IisApp path="/Users/westleyrotolo/Projects/CoronaBot/obj/Release/netcoreapp3.1/PubTmp/Out/" />
 </sitemanifest>

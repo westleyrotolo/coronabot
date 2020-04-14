@@ -1,26 +1,25 @@
 ﻿<Properties StartupConfiguration="{5C892A72-4BBD-48C9-970A-3F5B49A88B19}|Default" NuGet.AddPackagesDialog.IncludePrerelease="True">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Models/FeedItem.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Bots/EchoBot.cs">
     <Files>
-      <File FileName="Controllers/FAQIntentController.cs" Line="566" Column="1" />
-      <File FileName="Models/AppDbContext.cs" Line="35" Column="35" />
-      <File FileName="Models/FeedSearch.cs" Line="2" Column="20" />
-      <File FileName="Models/FeedItem.cs" Line="16" Column="41" />
-      <File FileName="ViewModels/FeedViewModel.cs" Line="12" Column="41" />
-      <File FileName="Models/FeedRss.cs" Line="1" Column="1" />
+      <File FileName="Bots/EchoBot.cs" Line="726" Column="29" />
+      <File FileName="appsettings.json" />
+      <File FileName="Luis/IntentLUIS.cs" />
+      <File FileName="Helpers/SelfCertificationManager.cs" />
+      <File FileName="Models/SelfCertification.cs" />
+      <File FileName="Luis/CovidLUIS.cs" />
+      <File FileName="Helpers/CovidImage.cs" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="EchoBot" expanded="True">
-            <Node name="CovidBot" expanded="True">
+            <Node name="CovidBot" expanded="True" selected="True">
               <Node name="Bots" expanded="True" />
               <Node name="Controllers" expanded="True" />
+              <Node name="Helpers" expanded="True" />
               <Node name="Luis" expanded="True" />
-              <Node name="Models" expanded="True">
-                <Node name="FeedRss.cs" selected="True" />
-              </Node>
-              <Node name="ViewModels" expanded="True" />
-              <Node name="wwwroot" expanded="True" />
+              <Node name="Properties" expanded="True" />
+              <Node name="Resources" expanded="True" />
             </Node>
           </Node>
         </State>
@@ -32,16 +31,7 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
-      <Breakpoint file="/Users/westleyrotolo/Projects/CoronaBot/Models/ProvinceCovidStats.cs" relfile="Models/ProvinceCovidStats.cs" line="49" column="1" />
-      <Breakpoint file="/Users/westleyrotolo/Projects/CoronaBot/Controllers/FAQIntentController.cs" relfile="Controllers/FAQIntentController.cs" line="497" column="1" />
-      <Breakpoint file="/Users/westleyrotolo/Projects/CoronaBot/Bots/EchoBot.cs" relfile="Bots/EchoBot.cs" line="207" column="1" />
-      <Breakpoint file="/Users/westleyrotolo/Projects/CoronaBot/Bots/EchoBot.cs" relfile="Bots/EchoBot.cs" line="468" column="1" />
-      <Breakpoint file="/Users/westleyrotolo/Projects/CoronaBot/Controllers/FAQIntentController.cs" relfile="Controllers/FAQIntentController.cs" line="218" column="1" />
-      <Breakpoint file="/Users/westleyrotolo/Projects/CoronaBot/Controllers/FAQIntentController.cs" relfile="Controllers/FAQIntentController.cs" line="347" column="1" />
-      <Breakpoint file="/Users/westleyrotolo/Projects/CoronaBot/Controllers/FAQIntentController.cs" relfile="Controllers/FAQIntentController.cs" line="427" column="1" />
-      <Breakpoint file="/Users/westleyrotolo/Projects/CoronaBot/Controllers/FAQIntentController.cs" relfile="Controllers/FAQIntentController.cs" line="561" column="1" />
-      <Breakpoint file="/Users/westleyrotolo/Projects/CoronaBot/Controllers/FAQIntentController.cs" relfile="Controllers/FAQIntentController.cs" line="571" column="1" />
-      <Breakpoint file="/Users/westleyrotolo/Projects/CoronaBot/Controllers/FAQIntentController.cs" relfile="Controllers/FAQIntentController.cs" line="566" column="1" />
+      <Breakpoint file="/Users/westleyrotolo/Projects/CoronaBot/Bots/EchoBot.cs" relfile="Bots/EchoBot.cs" line="426" column="1" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MultiItemStartupConfigurations />

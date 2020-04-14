@@ -101,5 +101,14 @@
     <Reference Include="Polly">
       <HintPath>..\publish\Polly.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\Downloads\Cognitive-LUIS-Programmatic-dev\Release\netstandard2.0\publish\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Polly">
+      <HintPath>..\..\Downloads\Cognitive-LUIS-Programmatic-dev\Release\netstandard2.0\publish\Polly.dll</HintPath>
+    </Reference>
+    <Reference Include="Cognitive.LUIS.Programmatic">
+      <HintPath>..\..\Downloads\Cognitive-LUIS-Programmatic-dev\Release\netstandard2.0\publish\Cognitive.LUIS.Programmatic.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>
