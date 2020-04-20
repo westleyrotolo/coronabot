@@ -1,26 +1,18 @@
 ﻿<Properties StartupConfiguration="{5C892A72-4BBD-48C9-970A-3F5B49A88B19}|Default" NuGet.AddPackagesDialog.IncludePrerelease="True">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Bots/EchoBot.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Helpers/CovidFAQ.cs">
     <Files>
-      <File FileName="Bots/EchoBot.cs" Line="726" Column="29" />
+      <File FileName="Helpers/SelfCertificationManager.cs" Line="246" Column="44" />
       <File FileName="appsettings.json" />
-      <File FileName="Luis/IntentLUIS.cs" />
-      <File FileName="Helpers/SelfCertificationManager.cs" />
-      <File FileName="Models/SelfCertification.cs" />
-      <File FileName="Luis/CovidLUIS.cs" />
-      <File FileName="Helpers/CovidImage.cs" />
+      <File FileName="Controllers/BotController.cs" />
+      <File FileName="Controllers/FAQIntentController.cs" />
+      <File FileName="Helpers/CovidFAQ.cs" Line="23" Column="39" />
+      <File FileName="Resources/delucaarrabbiato.png" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="EchoBot" expanded="True">
-            <Node name="CovidBot" expanded="True" selected="True">
-              <Node name="Bots" expanded="True" />
-              <Node name="Controllers" expanded="True" />
-              <Node name="Helpers" expanded="True" />
-              <Node name="Luis" expanded="True" />
-              <Node name="Properties" expanded="True" />
-              <Node name="Resources" expanded="True" />
-            </Node>
+            <Node name="CovidBot" expanded="True" selected="True" />
           </Node>
         </State>
       </Pad>
@@ -31,7 +23,7 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
-      <Breakpoint file="/Users/westleyrotolo/Projects/CoronaBot/Bots/EchoBot.cs" relfile="Bots/EchoBot.cs" line="426" column="1" />
+      <Breakpoint file="/Users/westleyrotolo/Projects/CoronaBot/Bots/EchoBot.cs" relfile="Bots/EchoBot.cs" line="38" column="1" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MultiItemStartupConfigurations />

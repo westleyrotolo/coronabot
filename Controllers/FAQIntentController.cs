@@ -77,6 +77,34 @@ namespace CoronaBot.Controllers
                 return BadRequest(ex.Message + " " + ex.InnerException?.Message ?? "");
             }
         }
+        [HttpGet("attachment/{id}")]
+        public async Task<IActionResult> GetAttachment(int id)
+        {
+            try
+            {
+                var a = appDbContext.FAQAnswers.FirstOrDefault(x => x.Id == id);
+                if (System.IO.File.Exists(a.Filepath))
+                {
+                    var memory = new MemoryStream();
+                    using (var stream = new FileStream(a.Filepath, FileMode.Open))
+                    {
+                        await stream.CopyToAsync(memory);
+                    }
+                    memory.Position = 0;
+                    return File(memory, MimeTypes.GetMimeType(a.Filepath), Path.GetFileName(a.Filepath));
+                }
+                else
+                {
+                    return NotFound("Allegato non trovato");
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
         [HttpPost("search")]
         public IActionResult Find([FromBody]IntentCriteriaFilter intentFaqViewModel)

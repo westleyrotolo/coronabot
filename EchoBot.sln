@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.29123.88
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CovidBot", "CovidBot.csproj", "{5C892A72-4BBD-48C9-970A-3F5B49A88B19}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cognitive.LUIS.Programmatic", "..\..\Downloads\Cognitive-LUIS-Programmatic-dev\Cognitive.LUIS.Programmatic\Cognitive.LUIS.Programmatic.csproj", "{01FD8CF0-17A7-4AAB-A969-35899C387502}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,10 +15,6 @@ Global
 		{5C892A72-4BBD-48C9-970A-3F5B49A88B19}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5C892A72-4BBD-48C9-970A-3F5B49A88B19}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5C892A72-4BBD-48C9-970A-3F5B49A88B19}.Release|Any CPU.Build.0 = Release|Any CPU
-		{01FD8CF0-17A7-4AAB-A969-35899C387502}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{01FD8CF0-17A7-4AAB-A969-35899C387502}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{01FD8CF0-17A7-4AAB-A969-35899C387502}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{01FD8CF0-17A7-4AAB-A969-35899C387502}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

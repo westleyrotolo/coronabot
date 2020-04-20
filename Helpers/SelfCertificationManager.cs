@@ -127,7 +127,7 @@ namespace CovidBot.Helpers
                         {
                             SelfCertification.StartPlace = $"{SelfCertification.ResidenceCity} {SelfCertification.ResidenceAddress}";
                             SelfCertification.StepType = StepType.StartPlaceAsk;
-                            SelfCertification.NextStepType = StepType.EndPlace;
+                            SelfCertification.NextStepType = StepType.EndPlaceAsk;
                             SelfCertification.Step+=2;
                         }
                         else 
@@ -241,11 +241,7 @@ namespace CovidBot.Helpers
         public static string[] Steps = new string[]
         {
             "",
-            "Iniziamo con la compilazione del modulo di autocertificazione \n\n"
-            +"Qualora volessi tornare indietro di uno step per modificare un'informazione inserita, "
-            +"ti basterà scrivere 'indietro' \n\n"
-            +"Per interrompere la compilazione del modulo 'annulla'. \n\n"
-            +"Come ti chiami?",
+            "Come ti chiami?",
             "Inserisci il luogo di nascita",
             "Inserisci la data di nascita",
             "Inserisci città ed indirizzo di residenza separata da una ',' (ad es Roma, Via Area Del Pero)",

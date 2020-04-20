@@ -16,14 +16,6 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "CovidBot": {
-      "commandName": "Project",
-      "launchBrowser": true,
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "applicationUrl": "http://localhost:5000"
-    },
     "EchoBot": {
       "commandName": "Project",
       "launchBrowser": true,
@@ -31,6 +23,14 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "applicationUrl": "https://localhost:3979;http://localhost:3978"
+    },
+    "CovidBot": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "http://localhost:5000"
     }
   }
 }

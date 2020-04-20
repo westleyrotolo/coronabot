@@ -35,24 +35,35 @@ namespace Microsoft.BotBuilderSamples.Bots
 
         private static Attachment GetAttachment(FAQAnswer fAQAnswer)
         {
-            var fileData = Convert.ToBase64String(File.ReadAllBytes(fAQAnswer.Filepath));
+           // var fileData = Convert.ToBase64String(File.ReadAllBytes(x));
             var contentType = MimeTypes.GetMimeType(fAQAnswer.Filepath);
             return new Attachment
-            { 
+            {
                 Name = string.IsNullOrWhiteSpace(fAQAnswer.Filename) ? "  " : fAQAnswer.Filename,
                 ContentType = contentType,
-                ContentUrl = $"data:{contentType};base64,{fileData}",
+                //  ContentUrl = $"data:{contentType};base64,{fileData}",
+                ContentUrl = "http://botwestley.azurewebsites.net/api/faq/attachment/" + fAQAnswer.Id
             };
         }
-
-        private static Attachment GetInlineAttachment()
+        private static Attachment GetInlineAttachment ()
         {
             var imagePath = Path.Combine(Environment.CurrentDirectory, @"Resources/de-luca-nervoso.jpg");
             var imageData = Convert.ToBase64String(File.ReadAllBytes(imagePath));
             return new Attachment
             {
-                Name = @"Resources/de-luca-nervoso.jpg",
+                Name = @" ",
                 ContentType = "image/jpg",
+                ContentUrl = $"data:image/jpg;base64,{imageData}",
+            };
+        }
+        private static Attachment GetDeLucaArrabbiato()
+        {
+            var imagePath = Path.Combine(Environment.CurrentDirectory, @"Resources/delucaarrabbiato.png");
+            var imageData = Convert.ToBase64String(File.ReadAllBytes(imagePath));
+            return new Attachment
+            {
+                Name = @" ",
+                ContentType = "image/png",
                 ContentUrl = $"data:image/png;base64,{imageData}",
             };
         }
@@ -150,7 +161,7 @@ namespace Microsoft.BotBuilderSamples.Bots
                     if (text.Trim().ToLower().Equals("vai indietro")
                         || text.Trim().ToLower().Equals("indietro"))
                     {
-                        selfCertification.Step = Math.Max(0, selfCertification.Step - 2);
+                        selfCertification.Step = Math.Max(0, selfCertification.Step - 1);
                         selfCertification.NextStepType = selfCertification.StepType;
                         appDbContext.Update(selfCertification);
                         await appDbContext.SaveChangesAsync();
@@ -445,6 +456,34 @@ namespace Microsoft.BotBuilderSamples.Bots
 
                                         appDbContext.Add(selfCertification);
                                         appDbContext.SaveChanges();
+                                        var heroCard = new HeroCard()
+                                        {
+                                            Title = "Compilare",
+                                            Text = "Iniziamo con l'autocertificazione \n\n"
+                                                                            + "Qualora volessi tornare indietro di uno step per modificare un'informazione inserita, "
+                                                                            + "ti basterà scrivere 'indietro' \n\n"
+                                                                            + "Per interrompere la compilazione del modulo 'annulla'. \n\n"
+                                                                            + "Oppure utilizzare i seguenti pulsanti",
+                                            Buttons = new List<CardAction>()
+                                            {
+                                                new CardAction
+                                                {
+                                                    Title = "Indietro",
+                                                    Value = "Indietro",
+                                                    Text = "Indietro",
+                                                    Type = ActionTypes.MessageBack
+                                                },
+                                                new CardAction
+                                                {
+                                                    Title = "Annulla",
+                                                    Value = "Annulla",
+                                                    Text = "Annulla",
+                                                    Type = ActionTypes.MessageBack
+                                                },
+
+                                            }
+                                        };
+                                        await turnContext.SendActivityAsync(MessageFactory.Attachment(heroCard.ToAttachment()), cancellationToken);
                                         await turnContext.SendActivityAsync(MessageFactory.Text(SelfCertificationManager.Steps[1]), cancellationToken);
                                         break;
                                     }
@@ -559,6 +598,7 @@ namespace Microsoft.BotBuilderSamples.Bots
                                     }
                                 case IntentLUIS.COSACHIEDO:
                                     {
+                                       
                                         var intent = appDbContext.FAQIntents.Include(x => x.FAQAnswers).Where(x => x.Intent == luisResult.GetTopScoringIntent().intent).FirstOrDefault();
                                         var intents = appDbContext.FAQIntents.Include(x => x.FAQQuestions).ToList();
 
@@ -576,6 +616,7 @@ namespace Microsoft.BotBuilderSamples.Bots
                                         }
                                         await turnContext.SendActivityAsync(MessageFactory.Text(q), cancellationToken);
 
+                                        await StartTour(turnContext, cancellationToken, false);
                                         break;
                                     }
                                 case IntentLUIS.ULTIMENOTIZIE:
@@ -744,7 +785,7 @@ namespace Microsoft.BotBuilderSamples.Bots
                     };
                     h.Buttons.Add(cardAction);
                 }
-                h.Title = "Sotto Categoria";
+                h.Title = text.ToUpper();
                 h.Text = "Seleziona una sotto categoria per avere informazioni, oppure scrivi i tuoi dubbi";
                 await turnContext.SendActivityAsync(MessageFactory.Attachment(h.ToAttachment()), cancellationToken);
                 return true;
@@ -771,7 +812,7 @@ namespace Microsoft.BotBuilderSamples.Bots
                     };
                     h.Buttons.Add(cardAction);
                 }
-                h.Title = "Domanda";
+                h.Title = text.ToUpper();
                 h.Text = "Seleziona una domanda per avere informazioni, oppure scrivi i tuoi dubbi";
                 await turnContext.SendActivityAsync(MessageFactory.Attachment(h.ToAttachment()), cancellationToken);
                 return true;
@@ -788,7 +829,6 @@ namespace Microsoft.BotBuilderSamples.Bots
                 if (answer!=null)
                 {
                     await turnContext.SendActivityAsync(MessageFactory.Text(string.Join("\n\n", answer.FAQAnswers.Select(x => x.Answer))));
-                    await StartTour(turnContext, cancellationToken);
                     return true;
                 }
 
@@ -854,12 +894,15 @@ namespace Microsoft.BotBuilderSamples.Bots
             }
             else if (turnContext.Activity.Name == "askToDeLuca")
             {
-                await StartTour(turnContext, cancellationToken);
+                await StartTour(turnContext, cancellationToken, false);
+            //    await turnContext.SendActivityAsync(MessageFactory.Text("Ciao, cosa vuoi sapere?"), cancellationToken);
             }
         }
-        async Task StartTour(ITurnContext turnContext,CancellationToken cancellationToken)
+        async Task StartTour(ITurnContext turnContext,CancellationToken cancellationToken, bool hasImage=true)
         {
-            var categories = appDbContext.FAQIntents.Where(x=>x.Category.ToLower().Equals("Decreto #IoRestoaCasa")).Select(x => x.Category).Distinct();
+            if (hasImage)
+                await turnContext.SendActivityAsync(MessageFactory.Attachment(GetDeLucaArrabbiato()), cancellationToken);
+            var categories = appDbContext.FAQIntents.Where(x=>(x.Category.ToLower().Equals("decreto #iorestoacasa") || x.Category.ToLower().Equals("#curaitalia"))).Select(x => x.Category).Distinct();
             var h = new HeroCard();
             h.Buttons = new List<CardAction>();
             foreach (var c in categories)
@@ -891,7 +934,7 @@ namespace Microsoft.BotBuilderSamples.Bots
                 Value = "http://www.regione.campania.it/regione/it/news/primo-piano/coronavirus-raccolta-fondi-per-l-emergenza-ecco-il-conto-corrente"
             };
             h.Buttons.Add(cardDonazioni);
-            h.Title = "Categorie";
+            h.Title = "Approfondimenti";
             h.Subtitle = "Seleziona una categoria per avere informazioni, oppure scrivi i tuoi dubbi";
             h.Text = "Seleziona una categoria per avere informazioni, oppure scrivi i tuoi dubbi";
             await turnContext.SendActivityAsync(MessageFactory.Attachment(h.ToAttachment()), cancellationToken);
