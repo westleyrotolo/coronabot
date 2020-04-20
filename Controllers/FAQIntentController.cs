@@ -22,7 +22,7 @@ namespace CoronaBot.Controllers
     [ApiController]
     public class FAQIntentController : Controller
     {
-        private readonly string SubscriptionKey = "b1bcedf3591a4d2eb596fe1c38a014ee";
+        private readonly string SubscriptionKey = "126ec73304864662bef0c469a0ded7eb";
         private readonly Regions Region = Regions.WestUS;
         private readonly string appVersion = "0.1";
         private readonly string appId = "35b61d64-1957-4240-80f5-4c59fd4f32b2";
@@ -105,7 +105,12 @@ namespace CoronaBot.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
+        [HttpGet("ping")]
+        public IActionResult Ping()
+        {
+            var d = new DateTime().ToLongDateString();
+            return Ok("Ping: " + d);
+        }
         [HttpPost("search")]
         public IActionResult Find([FromBody]IntentCriteriaFilter intentFaqViewModel)
         {
@@ -117,6 +122,7 @@ namespace CoronaBot.Controllers
                             && (!intentFaqViewModel.ByCategory || x.Category.ToLower().Contains(intentFaqViewModel.Category.ToLower()))
                             && (!intentFaqViewModel.BySubCategory || x.SubCategory.ToLower().Contains(intentFaqViewModel.SubCategory.ToLower()))
                             && (!intentFaqViewModel.ByQuestion || x.FAQQuestions.Select(x => x.Question.ToLower()).Any(y => y.Contains(intentFaqViewModel.Question.ToLower()))))
+                    .Skip(intentFaqViewModel.ItemPerPage*intentFaqViewModel.Page).Take(intentFaqViewModel.ItemPerPage)
                     .OrderByDescending(x => x.Id)
                     .Select((x) => new ViewModels.IntentFaqViewModel
                     {

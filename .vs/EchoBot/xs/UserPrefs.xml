@@ -1,18 +1,25 @@
 ﻿<Properties StartupConfiguration="{5C892A72-4BBD-48C9-970A-3F5B49A88B19}|Default" NuGet.AddPackagesDialog.IncludePrerelease="True">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Helpers/CovidFAQ.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Controllers/FAQIntentController.cs">
     <Files>
       <File FileName="Helpers/SelfCertificationManager.cs" Line="246" Column="44" />
       <File FileName="appsettings.json" />
       <File FileName="Controllers/BotController.cs" />
-      <File FileName="Controllers/FAQIntentController.cs" />
-      <File FileName="Helpers/CovidFAQ.cs" Line="23" Column="39" />
+      <File FileName="Controllers/FAQIntentController.cs" Line="121" Column="50" />
+      <File FileName="Helpers/CovidFAQ.cs" />
       <File FileName="Resources/delucaarrabbiato.png" />
+      <File FileName="Models/IntentCriteriaFilter.cs" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="EchoBot" expanded="True">
-            <Node name="CovidBot" expanded="True" selected="True" />
+            <Node name="CovidBot" expanded="True">
+              <Node name="Controllers" expanded="True">
+                <Node name="FAQIntentController.cs" selected="True" />
+              </Node>
+              <Node name="Helpers" expanded="True" />
+              <Node name="Models" expanded="True" />
+            </Node>
           </Node>
         </State>
       </Pad>
@@ -24,6 +31,8 @@
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
       <Breakpoint file="/Users/westleyrotolo/Projects/CoronaBot/Bots/EchoBot.cs" relfile="Bots/EchoBot.cs" line="38" column="1" />
+      <Breakpoint file="/Users/westleyrotolo/Projects/CoronaBot/Controllers/FAQIntentController.cs" relfile="Controllers/FAQIntentController.cs" line="113" column="1" />
+      <Breakpoint file="/Users/westleyrotolo/Projects/CoronaBot/Controllers/FAQIntentController.cs" relfile="Controllers/FAQIntentController.cs" line="135" column="1" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MultiItemStartupConfigurations />

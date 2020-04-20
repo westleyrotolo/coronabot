@@ -13,5 +13,7 @@ namespace CoronaBot.Models
         public bool BySubCategory { get; set; }
         public string Intent { get; set; }
         public bool ByIntent { get; set; }
+        public int ItemPerPage { get; set; }
+        public int Page { get; set; }
     }
 }
