@@ -905,9 +905,9 @@ namespace Microsoft.BotBuilderSamples.Bots
         }
         public async Task<bool> Tour(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
-            if (turnContext.Activity.Value == null && !turnContext.Activity.Text.StartsWith("[start]"))
+            var value = turnContext.Activity.Value?.ToString() ??  ((turnContext.Activity.Text != null && turnContext.Activity.Text.StartsWith("[")) ? turnContext.Activity.Text : "") ;
+            if (string.IsNullOrWhiteSpace(value))
                 return false;
-            var value = turnContext.Activity.Value?.ToString() ?? "";
             if (value.Equals("[linkutili]"))
             {
                 await IDK(turnContext, cancellationToken);
@@ -928,6 +928,8 @@ namespace Microsoft.BotBuilderSamples.Bots
                     {
                         Type = ActionTypes.MessageBack,
                         Title = s.ToUpper(),
+                        DisplayText = s.ToUpper(),
+                        Text = "[subcategory]" + s,
                         Value = "[subcategory]" + s
                     };
                     h.Buttons.Add(cardAction);
@@ -955,6 +957,8 @@ namespace Microsoft.BotBuilderSamples.Bots
                     {
                         Type = ActionTypes.MessageBack,
                         Title = s.Question.ToUpper(),
+                        DisplayText = s.Question.ToUpper(),
+                        Text = "[answer]" + s.Id,
                         Value = "[answer]" + s.Id 
                     };
                     h.Buttons.Add(cardAction);
@@ -1068,8 +1072,9 @@ namespace Microsoft.BotBuilderSamples.Bots
                 {
                     Type = ActionTypes.MessageBack,
                     Title = c.ToUpper(),
-                    Text = c.ToUpper(),
+                    Text = "[category]" + c,
                     Value = "[category]" + c
+                   
                 };
                 h.Buttons.Add(cardAction);
             }
@@ -1077,7 +1082,7 @@ namespace Microsoft.BotBuilderSamples.Bots
             {
                 Type = ActionTypes.MessageBack,
                 Title = "Link Utili",
-                Text = "Link Utili",
+                Text = "[linkutili]",
                 Value = "[linkutili]"
             };
             h.Buttons.Add(cardIDKAction);
