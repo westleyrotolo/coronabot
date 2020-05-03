@@ -13,6 +13,7 @@ using Microsoft.Extensions.Hosting;
 using CoronaBot.Models;
 using Microsoft.EntityFrameworkCore;
 using CovidBot.Luis;
+using Microsoft.AspNetCore.Http;
 
 namespace Microsoft.BotBuilderSamples
 {
@@ -33,6 +34,7 @@ namespace Microsoft.BotBuilderSamples
             services.AddControllers();
             // Create the Bot Framework Adapter with error handling enabled.
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddDbContext<AppDbContext>(options =>
                 options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
             services.AddCors(o => o.AddPolicy("MyPolicy", builder =>

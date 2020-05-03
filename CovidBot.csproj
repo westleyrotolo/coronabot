@@ -63,6 +63,9 @@
     <None Update="Resources\delucaarrabbiato.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Resources\autocertificazionev2.docx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Luis\App\Endpoint.cs" />

@@ -35,6 +35,14 @@ namespace CovidBot.Helpers
                     }
                 case StepType.Residence:
                     {
+                        if (string.IsNullOrWhiteSpace(message))
+                        {
+                            SelfCertification.ResidenceCity = string.Empty;
+                            SelfCertification.ResidenceAddress = string.Empty;
+                            SelfCertification.StepType = StepType.Domicile;
+                            SelfCertification.NextStepType = StepType.IdentificationType;
+                            SelfCertification.Step++;
+                        }
                         var temp = message.Split(",");
                         if (temp.Length > 1)
                         {
@@ -68,6 +76,14 @@ namespace CovidBot.Helpers
                     }
                 case StepType.Domicile:
                     {
+                        if (string.IsNullOrWhiteSpace(message))
+                        {
+                            SelfCertification.DomicileCity = string.Empty;
+                            SelfCertification.DomicileAddress = string.Empty;
+                            SelfCertification.StepType = StepType.Domicile;
+                            SelfCertification.NextStepType = StepType.IdentificationType;
+                            SelfCertification.Step++;
+                        }
                         var temp = message.Split(",");
                         if (temp.Length > 1)
                         {
@@ -287,7 +303,7 @@ namespace CovidBot.Helpers
         };
         public static string[] ChooseMotive = new string[]
         {
-            "Comprovate esigenze lavorative,",
+            "Comprovate esigenze lavorative",
             "Motivi di assoluta urgenza (per spostamenti in altro comune)",
             "Motivi di necessità (per spostamenti all'interno del proprio comune)",
             "Motivi di salute"

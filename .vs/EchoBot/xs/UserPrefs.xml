@@ -1,24 +1,37 @@
 ﻿<Properties StartupConfiguration="{5C892A72-4BBD-48C9-970A-3F5B49A88B19}|Default" NuGet.AddPackagesDialog.IncludePrerelease="True">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Controllers/FAQIntentController.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Bots/EchoBot.cs">
     <Files>
-      <File FileName="Helpers/SelfCertificationManager.cs" Line="246" Column="44" />
+      <File FileName="Helpers/SelfCertificationManager.cs" Line="290" Column="23" />
       <File FileName="appsettings.json" />
       <File FileName="Controllers/BotController.cs" />
-      <File FileName="Controllers/FAQIntentController.cs" Line="121" Column="50" />
+      <File FileName="Controllers/FAQIntentController.cs" />
       <File FileName="Helpers/CovidFAQ.cs" />
       <File FileName="Resources/delucaarrabbiato.png" />
       <File FileName="Models/IntentCriteriaFilter.cs" />
+      <File FileName="Bots/EchoBot.cs" Line="79" Column="99" />
+      <File FileName="Helpers/CovidImage.cs" />
+      <File FileName="Luis/IntentLUIS.cs" />
+      <File FileName="Startup.cs" />
+      <File FileName="Program.cs" />
+      <File FileName="Models/Visitor.cs" />
+      <File FileName="Models/UserQuestion.cs" />
+      <File FileName="Models/RegionCovidStats.cs" />
+      <File FileName="Models/AppDbContext.cs" />
+      <File FileName="Models/FeedSearch.cs" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="EchoBot" expanded="True">
             <Node name="CovidBot" expanded="True">
-              <Node name="Controllers" expanded="True">
-                <Node name="FAQIntentController.cs" selected="True" />
+              <Node name="Bots" expanded="True">
+                <Node name="EchoBot.cs" selected="True" />
               </Node>
-              <Node name="Helpers" expanded="True" />
+              <Node name="Controllers" expanded="True" />
+              <Node name="Luis" expanded="True" />
+              <Node name="Migrations" expanded="True" />
               <Node name="Models" expanded="True" />
+              <Node name="Resources" expanded="True" />
             </Node>
           </Node>
         </State>
@@ -31,8 +44,8 @@
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
       <Breakpoint file="/Users/westleyrotolo/Projects/CoronaBot/Bots/EchoBot.cs" relfile="Bots/EchoBot.cs" line="38" column="1" />
-      <Breakpoint file="/Users/westleyrotolo/Projects/CoronaBot/Controllers/FAQIntentController.cs" relfile="Controllers/FAQIntentController.cs" line="113" column="1" />
-      <Breakpoint file="/Users/westleyrotolo/Projects/CoronaBot/Controllers/FAQIntentController.cs" relfile="Controllers/FAQIntentController.cs" line="135" column="1" />
+      <Breakpoint file="/Users/westleyrotolo/Projects/CoronaBot/Controllers/FAQIntentController.cs" relfile="Controllers/FAQIntentController.cs" line="153" column="1" />
+      <Breakpoint file="/Users/westleyrotolo/Projects/CoronaBot/Controllers/FAQIntentController.cs" relfile="Controllers/FAQIntentController.cs" line="175" column="1" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MultiItemStartupConfigurations />

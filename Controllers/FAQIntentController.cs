@@ -15,6 +15,9 @@ using System.Diagnostics;
 using System.Xml;
 using System.ServiceModel.Syndication;
 using Microsoft.Toolkit.Parsers.Rss;
+using Microsoft.AspNetCore.Http;
+using CovidBot.Models;
+using System.Text.RegularExpressions;
 
 namespace CoronaBot.Controllers
 {
@@ -26,11 +29,28 @@ namespace CoronaBot.Controllers
         private readonly Regions Region = Regions.WestUS;
         private readonly string appVersion = "0.1";
         private readonly string appId = "35b61d64-1957-4240-80f5-4c59fd4f32b2";
+        private IHttpContextAccessor accessor;
 
         AppDbContext appDbContext;
-        public FAQIntentController(AppDbContext _appDbContext)
+        public FAQIntentController(AppDbContext _appDbContext, IHttpContextAccessor _accessor)
         {
             appDbContext = _appDbContext;
+            accessor = _accessor;
+        }
+ 
+
+
+        [HttpGet("check")]
+        public async Task<IActionResult> Check()
+        {
+            var ip = accessor.HttpContext.Connection.RemoteIpAddress.ToString();
+            var v = new Visitor();
+            v.CreatedAt = DateTime.Now;
+            v.Who = ip;
+            await appDbContext.AddAsync(v);
+            await appDbContext.SaveChangesAsync();
+            return Ok("1.0");
+
         }
 
         [HttpGet("intents")]
@@ -77,6 +97,27 @@ namespace CoronaBot.Controllers
                 return BadRequest(ex.Message + " " + ex.InnerException?.Message ?? "");
             }
         }
+
+        [HttpGet("image")]
+        public async Task<IActionResult> GetImage([FromQuery]string url)
+        {
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    var result = await httpClient.GetByteArrayAsync("http://"+url);
+                    var filename = "file";
+                    if (url.LastIndexOf("/") != -1)
+                        filename =  url.Substring(url.LastIndexOf("/"));
+                    return File(result, MimeTypes.GetMimeType(url), filename);
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
         [HttpGet("attachment/{id}")]
         public async Task<IActionResult> GetAttachment(int id)
         {
@@ -122,8 +163,8 @@ namespace CoronaBot.Controllers
                             && (!intentFaqViewModel.ByCategory || x.Category.ToLower().Contains(intentFaqViewModel.Category.ToLower()))
                             && (!intentFaqViewModel.BySubCategory || x.SubCategory.ToLower().Contains(intentFaqViewModel.SubCategory.ToLower()))
                             && (!intentFaqViewModel.ByQuestion || x.FAQQuestions.Select(x => x.Question.ToLower()).Any(y => y.Contains(intentFaqViewModel.Question.ToLower()))))
-                    .Skip(intentFaqViewModel.ItemPerPage*intentFaqViewModel.Page).Take(intentFaqViewModel.ItemPerPage)
                     .OrderByDescending(x => x.Id)
+                    .Skip(intentFaqViewModel.ItemPerPage * intentFaqViewModel.Page).Take(intentFaqViewModel.ItemPerPage)
                     .Select((x) => new ViewModels.IntentFaqViewModel
                     {
                         Id = x.Id,
@@ -643,6 +684,17 @@ namespace CoronaBot.Controllers
             try
             {
                 var items = appDbContext.FeedRss.Include(x=>x.FeedItems).SelectMany(x => x.FeedItems).OrderByDescending(x=>x.PubDate).Take(50).ToList();
+                items.ForEach(x =>
+                {
+                    Regex regx = new Regex("http://([\\w+?\\.\\w+])+([a-zA-Z0-9\\~\\!\\@\\#\\$\\%\\^\\&amp;\\*\\(\\)_\\-\\=\\+\\\\\\/\\?\\.\\:\\;\\'\\,]*)?", RegexOptions.IgnoreCase);
+                    MatchCollection mactches = regx.Matches(x.Summary ?? "");
+                    foreach (Match match in mactches)
+                    {
+                        if (match.Value.EndsWith(".png") || match.Value.EndsWith(".jpg") || match.Value.EndsWith(".jpeg"))
+                            x.Summary = x.Summary.Replace(match.Value, $"https://heybot-covid.azurewebsites.net/api/faq/image?url={match.Value.Replace("http://", "")}");
+                    }
+
+                });
                 return Ok(items);
             }
             catch (Exception ex)

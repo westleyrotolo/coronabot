@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using CovidBot.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoronaBot.Models
@@ -29,5 +30,6 @@ namespace CoronaBot.Models
         public DbSet<RegionCovidStats> RegionCovidStats { get; set; }
         public DbSet<FeedItem> FeedItems { get; set; }
         public DbSet<FeedRss> FeedRss { get; set; }
+        public DbSet<Visitor> Visitors { get; set; }
     }
 }

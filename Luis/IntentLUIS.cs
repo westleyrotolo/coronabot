@@ -22,5 +22,6 @@ namespace CovidBot.Luis
         public const string COSACHIEDO = "COSACHIEDO";
         public const string REPORTCONTAGI = "REPORTCONTAGI";
         public const string ULTIMENOTIZIE = "ULTIMENOTIZIE";
+        public const string APPROFONDIMENTI = "APPROFONDIMENTI";
     }
 }
